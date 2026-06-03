@@ -198,5 +198,69 @@
     "description": "Scholars at the House of Wisdom translated important scientific and mathematical texts from Greece and India into Arabic, preserving ancient knowledge and introducing 'Arabic' numerals, including zero, into the Islamic world.",
     "category": "Mathematics and Science",
     "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508243530-0",
+    "year": 1543,
+    "title": "Publication of De Humani Corporis Fabrica",
+    "description": "Andreas Vesalius published a groundbreaking book describing human dissections with detailed illustrations, revolutionizing anatomy.",
+    "category": "Biology",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508243530-1",
+    "year": 1543,
+    "title": "Publication of De Revolutionibus Orbium Coelestium",
+    "description": "Nicolaus Copernicus published his heliocentric model, overturning the Earth-centered universe theory established by Ptolemy.",
+    "category": "Astronomy",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508243530-2",
+    "year": 1600,
+    "title": "Publication of De Magnete",
+    "description": "William Gilbert explained that Earth itself is a magnet, causing compass needles to point north, and proposed that Earth's core is made of iron.",
+    "category": "Physics",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508243530-3",
+    "year": 1623,
+    "title": "Discovery of the Circulatory System",
+    "description": "William Harvey described how the heart pumps blood around the body, challenging ancient theories by Galen.",
+    "category": "Biology",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508243530-4",
+    "year": 1660,
+    "title": "Birth of Modern Chemistry",
+    "description": "Robert Boyle defined a chemical element and distinguished chemistry as a science separate from alchemy through his works, including The Sceptical Chymist.",
+    "category": "Chemistry",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508243530-5",
+    "year": 1665,
+    "title": "Publication of Micrographia",
+    "description": "Robert Hooke's best-selling book featured illustrations of microscopic subjects, revealing a previously unseen world.",
+    "category": "Biology",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508243530-6",
+    "year": 1687,
+    "title": "Publication of Principia Mathematica",
+    "description": "Isaac Newton's work introduced the laws of motion and universal gravity, forming the foundation of classical physics.",
+    "category": "Physics",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508243530-7",
+    "year": 18,
+    "title": "Discovery of Oxygen's Role in Combustion",
+    "description": "Antoine Lavoisier discovered the role of oxygen in combustion, discrediting the old phlogiston theory and advancing chemical science.",
+    "category": "Chemistry",
+    "significance": 4
   }
 ]
