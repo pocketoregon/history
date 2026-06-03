@@ -340,8 +340,13 @@ ${text}`
         throw new Error("JSON format invalid. Try clicking Extract again!");
       }
     }
+    if (aiExtracted.length === 0) {
+      document.getElementById('ai-status').textContent = 'No events found in this text. Try a different paragraph.';
+      document.getElementById('ai-approve-btn').style.display = 'none';
+      return;
+    }
     renderAIPreview();
-    document.getElementById('ai-status').textContent = `Found ${aiExtracted.length} events. Check the ones you want to add.`;
+    document.getElementById('ai-status').textContent = `Found ${aiExtracted.length} event${aiExtracted.length > 1 ? 's' : ''}. Check the ones you want to add.`;
   } catch(e) {
     document.getElementById('ai-status').textContent = 'Error: ' + e.message;
   }
