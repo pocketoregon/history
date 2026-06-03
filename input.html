@@ -40,16 +40,20 @@
   .token-bar { display: flex; gap: 10px; align-items: flex-end; }
   .token-bar input { flex: 1; }
   .token-bar button { margin-top: 0; }
-  #ai-preview { margin-top: 16px; }
+  #ai-preview { margin-top: 16px; width: 100%; }
   .ai-event-item {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 10px; border: 1px solid #3a5aff33;
-    border-radius: 8px; margin-bottom: 8px; background: #0a0a1a;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px; border: 1px solid #3a5aff33;
+    border-radius: 8px; margin-bottom: 10px; background: #0a0a1a;
+    width: 100%; box-sizing: border-box;
   }
-  .ai-event-item input[type=checkbox] { margin-top: 4px; accent-color: #3a5aff; }
-  .ai-event-item .ai-info { flex: 1; font-size: 0.85rem; }
-  .ai-event-item .ai-info strong { color: #aac4ff; }
-  .ai-event-item .ai-info p { color: #ccc; margin-top: 4px; line-height: 1.4; }
+  .ai-event-item input[type=checkbox] {
+    margin-top: 4px; accent-color: #3a5aff;
+    flex-shrink: 0; width: 16px; height: 16px; cursor: pointer;
+  }
+  .ai-event-item .ai-info { flex: 1; font-size: 0.85rem; min-width: 0; }
+  .ai-event-item .ai-info strong { color: #aac4ff; display: block; margin-bottom: 6px; }
+  .ai-event-item .ai-info p { color: #ccc; margin-top: 4px; line-height: 1.6; word-wrap: break-word; }
   a { color: #3a5aff55; font-size: 0.75rem; text-decoration: none; display: block; margin-bottom: 30px; }
   a:hover { color: #aac4ff; }
 </style>
