@@ -316,6 +316,7 @@ Each item in the array must be an object matching this format exactly:
 
 Text to analyze:
 ${text}`
+        }],
         max_tokens: 2000
       })
     });
@@ -323,7 +324,6 @@ ${text}`
     const raw = data.choices[0].message.content.trim();
     let cleaned = raw.replace(/^```json\s*|^```\s*|```$/gm, '').trim();
 
-    // Fix unescaped internal quotes before parsing
     try {
       aiExtracted = JSON.parse(cleaned);
     } catch (e) {
@@ -363,7 +363,6 @@ async function approveAIEvents() {
   
   const targetedIds = [];
   approved.forEach((ev, i) => {
-    // Generate clean unique ID strings instead of raw Math.random floats
     const cleanId = 'ev-ai-' + Date.now() + '-' + i;
     targetedIds.push({ id: cleanId, title: ev.title });
     allEvents.push({ id: cleanId, ...ev });
@@ -375,11 +374,7 @@ async function approveAIEvents() {
     document.getElementById('ai-preview').innerHTML = '';
     document.getElementById('ai-approve-btn').style.display = 'none';
     document.getElementById('ai-text').value = '';
-    
-    // Render the new events in the lower tracking index list
     renderList();
-    
-    // Kickstart the 60s live status tracker for all newly approved elements
     targetedIds.forEach(target => {
       startLiveCheck(target.id, target.title);
     });
