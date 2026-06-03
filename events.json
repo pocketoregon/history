@@ -150,5 +150,21 @@
     "description": "Theoretical physicists predicted the Higgs particle, a major milestone in particle physics, essential for the Standard Model.",
     "category": "Physics",
     "significance": 5
+  },
+  {
+    "id": "ev-ai-1780507480354-0",
+    "year": -240,
+    "title": "First Recorded Observation of Halley's Comet",
+    "description": "Chinese astronomers made the first recorded observation of Halley's Comet, marking an early contribution to the study of celestial phenomena.",
+    "category": "Astronomy",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780507480354-1",
+    "year": 1054,
+    "title": "Observation of Supernova (Crab Nebula)",
+    "description": "Chinese astronomers documented a supernova explosion that is now identified as the Crab Nebula, adding valuable historical data to the field of astronomy.",
+    "category": "Astronomy",
+    "significance": 4
   }
 ]
