@@ -38,5 +38,29 @@
     "description": "Italian astronomer Galileo Galilei disproved Aristotle's assertion that heavier objects fall faster than lighter ones, introducing the importance of empirical evidence.",
     "category": "Physics",
     "significance": 5
+  },
+  {
+    "id": "ev-ai-1780503420103-0",
+    "year": 1021,
+    "title": "Work of Alhazen on Scientific Method",
+    "description": "Arab scientist Alhazen laid foundational concepts for the scientific method approximately 600 years before Francis Bacon.",
+    "category": "Science Methodology",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780503420103-1",
+    "year": 1620,
+    "title": "Francis Bacon's Scientific Method",
+    "description": "English philosopher Francis Bacon introduced a systematic method for scientific processes that emphasized observation, hypothesis formation, experimentation, and peer review.",
+    "category": "Science Methodology",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780503420103-2",
+    "year": 1682,
+    "title": "Edmond Halley Observes Halley's Comet",
+    "description": "English astronomer Edmond Halley observed and analyzed the comet of 1682, realizing its periodicity and significantly contributing to the understanding of comet history.",
+    "category": "Astronomy",
+    "significance": 4
   }
 ]
