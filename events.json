@@ -102,5 +102,21 @@
     "description": "Empedocles theorized that earth, air, fire, and water were the primary components of all matter, influencing future scientific thought.",
     "category": "Chemistry",
     "significance": 4
+  },
+  {
+    "id": "ev-ai-1780506384434-0",
+    "year": 1758,
+    "title": "Halley's Comet Prediction",
+    "description": "Edmond Halley predicted the return of the comet observed in 1682, correctly forecasting its reappearance in 1758, which confirmed its periodic orbit around the Sun.",
+    "category": "Astronomy",
+    "significance": 3
+  },
+  {
+    "id": "ev-ai-1780506384434-1",
+    "year": 1909,
+    "title": "Discovery of Atomic Nucleus",
+    "description": "Ernest Rutherford and his students conducted the gold foil experiment, which revealed that alpha particles occasionally bounced back, leading to the discovery of the atomic nucleus.",
+    "category": "Physics",
+    "significance": 5
   }
 ]
