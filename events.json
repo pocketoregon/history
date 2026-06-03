@@ -166,5 +166,37 @@
     "description": "Chinese astronomers documented a supernova explosion that is now identified as the Crab Nebula, adding valuable historical data to the field of astronomy.",
     "category": "Astronomy",
     "significance": 4
+  },
+  {
+    "id": "ev-ai-1780507654758-0",
+    "year": 800,
+    "title": "Establishment of the House of Wisdom",
+    "description": "The Abbasid caliphate founded the House of Wisdom in Baghdad, serving as a hub for advances in science, technology, and the collection and translation of Greek and Indian knowledge into Arabic.",
+    "category": "History of Science",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780507654758-1",
+    "year": 800,
+    "title": "Invention of the Astrolabe",
+    "description": "Ingenious mechanical devices, including the astrolabe, were developed at the House of Wisdom. The astrolabe was a navigational tool that utilized the positions of stars.",
+    "category": "Astronomy",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780507654758-2",
+    "year": 800,
+    "title": "Development of Alchemy and Distillation Techniques",
+    "description": "Alchemy flourished, and techniques such as distillation were pioneered during this period at the House of Wisdom.",
+    "category": "Chemistry",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780507654758-3",
+    "year": 800,
+    "title": "Translation of Ancient Texts into Arabic",
+    "description": "Scholars at the House of Wisdom translated important scientific and mathematical texts from Greece and India into Arabic, preserving ancient knowledge and introducing 'Arabic' numerals, including zero, into the Islamic world.",
+    "category": "Mathematics and Science",
+    "significance": 5
   }
 ]
