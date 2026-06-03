@@ -22,5 +22,21 @@
     "description": "Webb launched on December 25, orbiting the Sun at the second Lagrange point (L2) to study every phase of cosmic history, from the Big Bang to the evolution of the Solar System.",
     "category": "Astronomy",
     "significance": 3
+  },
+  {
+    "id": "ev-ai-1780503259793-0",
+    "year": -300,
+    "title": "Aristotle's Contributions to Science",
+    "description": "Aristotle wrote widely on scientific subjects and laid the foundations for much of the work that followed, though he relied entirely on thought and argument without conducting experiments.",
+    "category": "Philosophy of Science",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780503259794-1",
+    "year": 1590,
+    "title": "Galileo Disproves Aristotle's Falling Objects Theory",
+    "description": "Italian astronomer Galileo Galilei disproved Aristotle's assertion that heavier objects fall faster than lighter ones, introducing the importance of empirical evidence.",
+    "category": "Physics",
+    "significance": 5
   }
 ]
