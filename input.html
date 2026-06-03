@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Events</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a1a; color: #fff; font-family: Georgia, serif; padding: 40px 20px; }
+  h1 { color: #aac4ff; letter-spacing: 4px; text-transform: uppercase; font-size: 1.2rem; margin-bottom: 30px; }
+  .section { background: #111630; border: 1px solid #3a5aff33; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section h2 { color: #3a5aff; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+  label { display: block; color: #aac4ff99; font-size: 0.8rem; margin-bottom: 6px; margin-top: 14px; }
+  input, textarea, select {
+    width: 100%; padding: 10px 14px; background: #0a0a1a;
+    border: 1px solid #3a5aff55; border-radius: 8px;
+    color: #fff; font-size: 0.9rem; font-family: Georgia, serif;
+  }
+  textarea { height: 90px; resize: vertical; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: #aac4ff; }
+  button {
+    margin-top: 20px; padding: 10px 24px; background: #3a5aff;
+    color: #fff; border: none; border-radius: 8px;
+    font-size: 0.9rem; cursor: pointer; letter-spacing: 1px;
+  }
+  button:hover { background: #5a7aff; }
+  #status { margin-top: 12px; font-size: 0.85rem; color: #6bffb8; min-height: 20px; }
+  #events-list { margin-top: 10px; }
+  .event-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; border-bottom: 1px solid #3a5aff22;
+    font-size: 0.85rem;
+  }
+  .event-row:hover { background: #ffffff08; }
+  .event-row span { color: #aac4ff99; font-size: 0.75rem; margin-left: 10px; }
+  .event-actions { display: flex; gap: 8px; }
+  .btn-edit { background: #3a5aff; padding: 4px 12px; font-size: 0.75rem; margin-top: 0; }
+  .btn-delete { background: #ff4444; padding: 4px 12px; font-size: 0.75rem; margin-top: 0; }
+  .token-bar { display: flex; gap: 10px; align-items: flex-end; }
+  .token-bar input { flex: 1; }
+  .token-bar button { margin-top: 0; }
+  #ai-preview { margin-top: 16px; }
+  .ai-event-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px; border: 1px solid #3a5aff33;
+    border-radius: 8px; margin-bottom: 8px; background: #0a0a1a;
+  }
+  .ai-event-item input[type=checkbox] { margin-top: 4px; accent-color: #3a5aff; }
+  .ai-event-item .ai-info { flex: 1; font-size: 0.85rem; }
+  .ai-event-item .ai-info strong { color: #aac4ff; }
+  .ai-event-item .ai-info p { color: #ccc; margin-top: 4px; line-height: 1.4; }
+  a { color: #3a5aff55; font-size: 0.75rem; text-decoration: none; display: block; margin-bottom: 30px; }
+  a:hover { color: #aac4ff; }
+</style>
+</head>
+<body>
+<h1>Manage Events</h1>
+<a href="index.html">← back to timeline</a>
+
+<!-- TOKEN -->
+<div class="section">
+  <h2>GitHub Token</h2>
+  <label>Paste your Personal Access Token (stays in browser only)</label>
+  <div class="token-bar">
+    <input type="password" id="token-input" placeholder="github_pat_...">
+    <button onclick="saveToken()">Save</button>
+  </div>
+  <div id="token-status" style="margin-top:8px;font-size:0.8rem;color:#6bffb8;"></div>
+</div>
+
+<!-- MANUAL ADD / EDIT -->
+<div class="section">
+  <h2 id="form-title">Add Event Manually</h2>
+  <input type="hidden" id="edit-id">
+  <label>Year (use negative for BC, e.g. -300)</label>
+  <input type="number" id="f-year" placeholder="e.g. 1687">
+  <label>Title</label>
+  <input type="text" id="f-title" placeholder="e.g. Newton's Principia Published">
+  <label>Description</label>
+  <textarea id="f-desc" placeholder="What happened and why it matters..."></textarea>
+  <label>Category</label>
+  <select id="f-cat">
+    <option>Physics</option>
+    <option>Biology</option>
+    <option>Chemistry</option>
+    <option>Astronomy</option>
+    <option>Mathematics</option>
+    <option>Other</option>
+  </select>
+  <label>Significance</label>
+  <select id="f-sig">
+    <option value="1">1 — Minor</option>
+    <option value="2">2 — Notable</option>
+    <option value="3">3 — Major</option>
+  </select>
+  <button onclick="submitEvent()">Save Event</button>
+  <button onclick="cancelEdit()" id="cancel-btn" style="display:none;background:#555;margin-left:10px;">Cancel</button>
+  <div id="status"></div>
+</div>
+
+<!-- AI EXTRACTION -->
+<div class="section">
+  <h2>AI Extract from Book Page</h2>
+  <label>Paste text from the book page</label>
+  <textarea id="ai-text" style="height:140px;" placeholder="Paste a paragraph or page of text here..."></textarea>
+  <button onclick="extractWithAI()">Extract Events with AI</button>
+  <div id="ai-status" style="margin-top:10px;font-size:0.85rem;color:#aac4ff99;"></div>
+  <div id="ai-preview"></div>
+  <button id="ai-approve-btn" style="display:none;background:#6bffb8;color:#0a0a1a;" onclick="approveAIEvents()">Add Approved Events</button>
+</div>
+
+<!-- EXISTING EVENTS -->
+<div class="section">
+  <h2>Existing Events</h2>
+  <div id="events-list"><p style="color:#3a5aff55;font-size:0.85rem;">Loading...</p></div>
+</div>
+
+<script>
+const REPO = 'pocketoregon/history';
+const FILE = 'events.json';
+let allEvents = [];
+let aiExtracted = [];
+
+function saveToken() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) return;
+  localStorage.setItem('gh_token', t);
+  document.getElementById('token-status').textContent = 'Token saved for this session.';
+}
+
+function getToken() {
+  return localStorage.getItem('gh_token') || '';
+}
+
+window.onload = () => {
+  const t = getToken();
+  if (t) {
+    document.getElementById('token-input').value = t;
+    document.getElementById('token-status').textContent = 'Token loaded.';
+  }
+  loadEvents();
+};
+
+async function getFileSHA() {
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+    headers: { Authorization: `token ${getToken()}` }
+  });
+  const data = await res.json();
+  return data.sha;
+}
+
+async function loadEvents() {
+  const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${FILE}?t=` + Date.now());
+  allEvents = await res.json();
+  renderList();
+}
+
+async function saveEvents(events, message) {
+  const sha = await getFileSHA();
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(events, null, 2))));
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${getToken()}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, content, sha })
+  });
+  return res.ok;
+}
+
+async function submitEvent() {
+  const id = document.getElementById('edit-id').value;
+  const year = parseInt(document.getElementById('f-year').value);
+  const title = document.getElementById('f-title').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  const cat = document.getElementById('f-cat').value;
+  const sig = parseInt(document.getElementById('f-sig').value);
+  if (!year || !title || !desc) { setStatus('Please fill all fields.', '#ff6b6b'); return; }
+  setStatus('Saving...', '#aac4ff99');
+  if (id) {
+    const idx = allEvents.findIndex(e => e.id === id);
+    if (idx > -1) allEvents[idx] = { id, year, title, description: desc, category: cat, significance: sig };
+  } else {
+    allEvents.push({ id: Date.now().toString(), year, title, description: desc, category: cat, significance: sig });
+  }
+  const ok = await saveEvents(allEvents, `${id ? 'Edit' : 'Add'} event: ${title}`);
+  if (ok) { setStatus('Saved!', '#6bffb8'); clearForm(); renderList(); }
+  else setStatus('Error saving. Check your token.', '#ff6b6b');
+}
+
+function editEvent(id) {
+  const ev = allEvents.find(e => e.id === id);
+  if (!ev) return;
+  document.getElementById('edit-id').value = ev.id;
+  document.getElementById('f-year').value = ev.year;
+  document.getElementById('f-title').value = ev.title;
+  document.getElementById('f-desc').value = ev.description;
+  document.getElementById('f-cat').value = ev.category;
+  document.getElementById('f-sig').value = ev.significance;
+  document.getElementById('form-title').textContent = 'Edit Event';
+  document.getElementById('cancel-btn').style.display = 'inline-block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEdit() {
+  clearForm();
+}
+
+function clearForm() {
+  document.getElementById('edit-id').value = '';
+  document.getElementById('f-year').value = '';
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-cat').value = 'Physics';
+  document.getElementById('f-sig').value = '2';
+  document.getElementById('form-title').textContent = 'Add Event Manually';
+  document.getElementById('cancel-btn').style.display = 'none';
+  document.getElementById('status').textContent = '';
+}
+
+async function deleteEvent(id) {
+  if (!confirm('Delete this event?')) return;
+  allEvents = allEvents.filter(e => e.id !== id);
+  const ok = await saveEvents(allEvents, 'Delete event');
+  if (ok) { renderList(); }
+  else alert('Error deleting. Check your token.');
+}
+
+function renderList() {
+  const list = document.getElementById('events-list');
+  if (allEvents.length === 0) { list.innerHTML = '<p style="color:#3a5aff55;font-size:0.85rem;">No events yet.</p>'; return; }
+  const sorted = [...allEvents].sort((a, b) => a.year - b.year);
+  list.innerHTML = sorted.map(ev => `
+    <div class="event-row">
+      <div><strong>${ev.title}</strong><span>${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year} · ${ev.category}</span></div>
+      <div class="event-actions">
+        <button class="btn-edit" onclick="editEvent('${ev.id}')">Edit</button>
+        <button class="btn-delete" onclick="deleteEvent('${ev.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function setStatus(msg, color) {
+  const s = document.getElementById('status');
+  s.textContent = msg;
+  s.style.color = color;
+}
+
+async function extractWithAI() {
+  const text = document.getElementById('ai-text').value.trim();
+  if (!text) return;
+  const token = getToken();
+  if (!token) { document.getElementById('ai-status').textContent = 'Save your token first.'; return; }
+  document.getElementById('ai-status').textContent = 'Analyzing with AI...';
+  document.getElementById('ai-preview').innerHTML = '';
+  document.getElementById('ai-approve-btn').style.display = 'none';
+
+  try {
+    const res = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [{
+          role: 'user',
+          content: `Extract all historical science events from the text below. Return ONLY a JSON array, no markdown, no explanation. Each item must have: year (number, negative for BC), title (string), description (string, 1-2 sentences), category (one of: Physics, Biology, Chemistry, Astronomy, Mathematics, Other), significance (1, 2, or 3).\n\nText:\n${text}`
+        }],
+        max_tokens: 2000
+      })
+    });
+    const data = await res.json();
+    const raw = data.choices[0].message.content.trim();
+    aiExtracted = JSON.parse(raw);
+    renderAIPreview();
+    document.getElementById('ai-status').textContent = `Found ${aiExtracted.length} events. Check the ones you want to add.`;
+  } catch(e) {
+    document.getElementById('ai-status').textContent = 'Error: ' + e.message;
+  }
+}
+
+function renderAIPreview() {
+  const preview = document.getElementById('ai-preview');
+  preview.innerHTML = aiExtracted.map((ev, i) => `
+    <div class="ai-event-item">
+      <input type="checkbox" id="ai-cb-${i}" checked>
+      <div class="ai-info">
+        <strong>${ev.title} (${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year})</strong>
+        <p>${ev.description}</p>
+        <span style="font-size:0.75rem;color:#3a5aff;">${ev.category} · Significance ${ev.significance}</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('ai-approve-btn').style.display = 'inline-block';
+}
+
+async function approveAIEvents() {
+  const approved = aiExtracted.filter((_, i) => document.getElementById(`ai-cb-${i}`).checked);
+  if (approved.length === 0) return;
+  approved.forEach(ev => allEvents.push({ id: Date.now().toString() + Math.random(), ...ev }));
+  const ok = await saveEvents(allEvents, `AI extracted ${approved.length} events`);
+  if (ok) {
+    document.getElementById('ai-status').textContent = `Added ${approved.length} events!`;
+    document.getElementById('ai-preview').innerHTML = '';
+    document.getElementById('ai-approve-btn').style.display = 'none';
+    document.getElementById('ai-text').value = '';
+    renderList();
+  } else {
+    document.getElementById('ai-status').textContent = 'Error saving. Check your token.';
+  }
+}
+</script>
+</body>
+</html>
