@@ -3,48 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>History of Science</title>
+<title>Event Archivist — Timeline</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  
   body {
-    background: #0a0a1a;
-    color: #fff;
-    font-family: 'Georgia', serif;
+    background: #000;
+    color: #d1d5db;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.85rem;
     height: 100vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 2rem;
+  }
+
+  /* --- HEADER STYLES --- */
+  header {
+    border-bottom: 1px solid #222;
+    padding-bottom: 1rem;
+  }
+  .console-meta {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
   }
   h1 {
-    text-align: center;
-    font-size: 1.4rem;
-    color: #aac4ff;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 60px;
-    opacity: 0.7;
-    user-select: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
   }
+  header p {
+    font-style: italic;
+    color: #888;
+    margin-top: 0.25rem;
+  }
+
+  /* --- TIMELINE WORKSPACE --- */
   #timeline-container {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 300px;
     cursor: grab;
     overflow: hidden;
+    border-top: 1px dashed #222;
+    border-bottom: 1px dashed #222;
+    margin: 2rem 0;
   }
   #timeline-container:active { cursor: grabbing; }
+  
   #line {
     position: absolute;
     top: 50%;
     left: 0;
-    height: 2px;
-    background: linear-gradient(to right, transparent, #3a5aff, #aac4ff, #3a5aff, transparent);
+    height: 1px;
+    background: #333;
     width: 100%;
     transform: translateY(-50%);
     pointer-events: none;
     z-index: 1;
   }
+  
   #dots-wrapper {
     position: absolute;
     top: 0;
@@ -53,10 +77,11 @@
     display: flex;
     align-items: center;
     padding: 0 45vw; 
-    gap: 140px;
+    gap: 120px;
     transition: transform 0.1s ease-out;
     will-change: transform;
   }
+  
   .year-column {
     display: flex;
     flex-direction: column;
@@ -65,25 +90,18 @@
     position: relative;
     height: 100%;
   }
+  
   .dots-stack {
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
     position: absolute;
     bottom: 50%;
-    transform: translateY(10px);
+    transform: translateY(0.5px);
     z-index: 2;
   }
-  .dots-stack::before {
-    content: '';
-    position: absolute;
-    bottom: 10px;
-    top: 10px;
-    width: 1px;
-    background: linear-gradient(to top, #3a5aff55, transparent);
-    z-index: -1;
-  }
+  
   .dot-group {
     display: flex;
     flex-direction: column;
@@ -92,91 +110,153 @@
     user-select: none;
     position: relative;
   }
+  
   .dot {
-    border-radius: 50%;
-    background: #aac4ff;
-    box-shadow: 0 0 10px #3a5aff, 0 0 20px #3a5aff55;
-    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid currentColor;
+    background: #000;
+    transition: transform 0.15s, background-color 0.15s;
     flex-shrink: 0;
   }
   .dot-group:hover .dot {
-    transform: scale(1.4);
-    box-shadow: 0 0 20px #aac4ff, 0 0 40px #3a5aff;
+    transform: scale(1.3);
+    background: currentColor !important;
   }
+  
   .dot-year {
     position: absolute;
     top: 55%;
-    font-size: 0.8rem;
-    color: #aac4ff99;
-    letter-spacing: 1px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #fff;
     white-space: nowrap;
     pointer-events: none;
+    border: 1px solid #222;
+    padding: 2px 6px;
+    background: #000;
   }
-  #card {
-    display: none;
-    position: fixed;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #111630;
-    border: 1px solid #3a5aff55;
-    border-radius: 12px;
-    padding: 24px 32px;
-    max-width: 480px;
-    width: 90%;
-    box-shadow: 0 0 40px #3a5aff33;
-    z-index: 10;
+
+  /* --- INSPECTION PANEL --- */
+  #the-details {
+    visibility: hidden;
+    border: 1px solid #333;
+    background: #050505;
+    padding: 1.25rem;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
   }
-  #card h2 { color: #aac4ff; font-size: 1.1rem; margin-bottom: 6px; }
-  #card .year-tag { color: #3a5aff; font-size: 0.8rem; margin-bottom: 12px; }
-  #card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
-  #card .category { display: inline-block; margin-top: 12px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; }
+  .panel-title {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #1c1c1c;
+    padding-bottom: 0.25rem;
+  }
+  #card-title {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  #card-desc {
+    color: #999;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+  .meta-row {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+  }
+  .year-tag { color: #fff; font-weight: bold; }
+  .category { color: #888; }
+  
   #close-card {
-    position: absolute; top: 10px; right: 14px;
-    background: none; border: none; color: #aac4ff;
-    font-size: 1.2rem; cursor: pointer;
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; color: #444;
+    font-family: inherit; cursor: pointer;
   }
+  #close-card:hover { color: #fff; }
+
   #empty-msg {
     text-align: center;
-    color: #3a5aff55;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
+    color: #444;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* --- FOOTER NAVIGATION --- */
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #222;
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+  .system-status {
+    font-size: 0.7rem;
+    color: #444;
+    text-transform: uppercase;
   }
   a.input-link {
-    position: fixed;
-    bottom: 20px;
-    right: 24px;
-    color: #3a5aff;
-    font-size: 0.75rem;
+    color: #fff;
     text-decoration: none;
-    letter-spacing: 1px;
-    opacity: 0.5;
+    border: 1px solid #333;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
-  a.input-link:hover { opacity: 1; }
+  a.input-link:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
 </style>
 </head>
 <body>
-<h1>History of Science</h1>
+
+<header>
+  <div class="console-meta">Scientific Record — Visualizer Console</div>
+  <h1>The Living Timeline</h1>
+  <p>Curate, annotate, and publish events to the living timeline</p>
+</header>
+
 <div id="timeline-container">
   <div id="line"></div>
   <div id="dots-wrapper"></div>
 </div>
 <p id="empty-msg"></p>
-<div id="card">
+
+<div id="the-details">
   <button id="close-card">✕</button>
-  <div class="year-tag" id="card-year"></div>
+  <div class="panel-title">Inspection Node</div>
   <h2 id="card-title"></h2>
   <p id="card-desc"></p>
-  <span class="category" id="card-category"></span>
+  <div class="meta-row">
+    <span class="year-tag" id="card-year"></span>
+    <span class="category" id="card-category"></span>
+  </div>
 </div>
-<a class="input-link" href="input.html">+ manage events</a>
+
+<footer>
+  <span class="system-status">System Operational ⚗</span>
+  <a class="input-link" href="input.html">🔑 Manage Events</a>
+</footer>
 
 <script>
+// Desaturated, clinical hex codes to match standard scientific charting
 const COLORS = {
-  Physics: '#ff6b6b', Biology: '#6bffb8', Chemistry: '#ffd36b',
-  Astronomy: '#6baeff', Mathematics: '#d36bff', Other: '#aac4ff'
+  Physics: '#ff6b6b', Biology: '#51cf66', Chemistry: '#fcc419',
+  Astronomy: '#339af0', Mathematics: '#cc5de8', Other: '#a0aec0'
 };
-const SIZES = { 1: 12, 2: 18, 3: 26 };
+// Clean architectural sizes (No blur effects)
+const SIZES = { 1: 6, 2: 10, 3: 14 };
 
 async function loadEvents() {
   try {
@@ -185,7 +265,7 @@ async function loadEvents() {
     events.sort((a, b) => a.year - b.year);
     renderTimeline(events);
   } catch (err) {
-    document.getElementById('empty-msg').textContent = 'Error loading events. Make sure events.json exists.';
+    document.getElementById('empty-msg').textContent = 'Error syncing database. Verify events.json exists.';
   }
 }
 
@@ -193,7 +273,7 @@ function renderTimeline(events) {
   const wrapper = document.getElementById('dots-wrapper');
   wrapper.innerHTML = '';
   if (events.length === 0) {
-    document.getElementById('empty-msg').textContent = 'No events yet — add some from the manage page.';
+    document.getElementById('empty-msg').textContent = 'Empty timeline register.';
     return;
   }
 
@@ -221,11 +301,18 @@ function renderTimeline(events) {
       
       const dot = document.createElement('div');
       dot.className = 'dot';
-      const size = SIZES[ev.significance] || 14;
+      const size = SIZES[ev.significance] || 8;
+      
+      // Geometric structure updates
+      if(ev.significance === 'III' || ev.significance == 3) {
+        dot.style.borderRadius = '0px'; // Major events are absolute sharp squares
+      } else {
+        dot.style.borderRadius = '50%';
+      }
+      
       dot.style.width = size + 'px';
       dot.style.height = size + 'px';
-      dot.style.background = COLORS[ev.category] || COLORS.Other;
-      dot.style.boxShadow = `0 0 10px ${COLORS[ev.category] || COLORS.Other}`;
+      dot.style.color = COLORS[ev.category] || COLORS.Other;
       
       group.appendChild(dot);
       group.addEventListener('click', (e) => {
@@ -249,18 +336,19 @@ function renderTimeline(events) {
 }
 
 function showCard(ev) {
-  document.getElementById('card-year').textContent = ev.year < 0 ? Math.abs(ev.year) + ' BC' : 'Year ' + ev.year;
+  document.getElementById('card-year').textContent = ev.year < 0 ? 'YEAR: ' + Math.abs(ev.year) + ' BC' : 'YEAR: ' + ev.year;
   document.getElementById('card-title').textContent = ev.title;
   document.getElementById('card-desc').textContent = ev.description;
+  
   const cat = document.getElementById('card-category');
-  cat.textContent = ev.category;
-  cat.style.background = (COLORS[ev.category] || COLORS.Other) + '33';
+  cat.textContent = '// CATEGORY: ' + ev.category.toUpperCase();
   cat.style.color = COLORS[ev.category] || COLORS.Other;
-  document.getElementById('card').style.display = 'block';
+  
+  document.getElementById('the-details').style.visibility = 'visible';
 }
 
 document.getElementById('close-card').addEventListener('click', () => {
-  document.getElementById('card').style.display = 'none';
+  document.getElementById('the-details').style.visibility = 'hidden';
 });
 
 function initScroll() {
