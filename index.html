@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History of Science</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    color: #fff;
+    font-family: 'Georgia', serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.4rem;
+    color: #aac4ff;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 60px;
+    opacity: 0.7;
+  }
+  #timeline-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    cursor: grab;
+  }
+  #timeline-container:active { cursor: grabbing; }
+  #line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #3a5aff, #aac4ff, #3a5aff, transparent);
+    width: 100%;
+  }
+  #dots-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 200px;
+    gap: 80px;
+    transition: transform 0.1s ease;
+    will-change: transform;
+  }
+  .dot-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+  }
+  .dot {
+    border-radius: 50%;
+    background: #aac4ff;
+    box-shadow: 0 0 10px #3a5aff, 0 0 20px #3a5aff55;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+  }
+  .dot-group:hover .dot {
+    transform: scale(1.4);
+    box-shadow: 0 0 20px #aac4ff, 0 0 40px #3a5aff;
+  }
+  .dot-year {
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: #aac4ff99;
+    letter-spacing: 1px;
+  }
+  #card {
+    display: none;
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111630;
+    border: 1px solid #3a5aff55;
+    border-radius: 12px;
+    padding: 24px 32px;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 0 40px #3a5aff33;
+    z-index: 10;
+  }
+  #card h2 { color: #aac4ff; font-size: 1.1rem; margin-bottom: 6px; }
+  #card .year-tag { color: #3a5aff; font-size: 0.8rem; margin-bottom: 12px; }
+  #card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
+  #card .category { display: inline-block; margin-top: 12px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; }
+  #close-card {
+    position: absolute; top: 10px; right: 14px;
+    background: none; border: none; color: #aac4ff;
+    font-size: 1.2rem; cursor: pointer;
+  }
+  #empty-msg {
+    text-align: center;
+    color: #3a5aff55;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+  a.input-link {
+    position: fixed;
+    bottom: 20px;
+    right: 24px;
+    color: #3a5aff;
+    font-size: 0.75rem;
+    text-decoration: none;
+    letter-spacing: 1px;
+    opacity: 0.5;
+  }
+  a.input-link:hover { opacity: 1; }
+</style>
+</head>
+<body>
+<h1>History of Science</h1>
+<div id="timeline-container">
+  <div id="line"></div>
+  <div id="dots-wrapper"></div>
+</div>
+<p id="empty-msg"></p>
+<div id="card">
+  <button id="close-card">✕</button>
+  <div class="year-tag" id="card-year"></div>
+  <h2 id="card-title"></h2>
+  <p id="card-desc"></p>
+  <span class="category" id="card-category"></span>
+</div>
+<a class="input-link" href="input.html">+ manage events</a>
+
+<script>
+const COLORS = {
+  Physics: '#ff6b6b', Biology: '#6bffb8', Chemistry: '#ffd36b',
+  Astronomy: '#6baeff', Mathematics: '#d36bff', Other: '#aac4ff'
+};
+const SIZES = { 1: 10, 2: 14, 3: 20 };
+
+async function loadEvents() {
+  const res = await fetch('events.json?t=' + Date.now());
+  const events = await res.json();
+  events.sort((a, b) => a.year - b.year);
+  renderTimeline(events);
+}
+
+function renderTimeline(events) {
+  const wrapper = document.getElementById('dots-wrapper');
+  wrapper.innerHTML = '';
+  if (events.length === 0) {
+    document.getElementById('empty-msg').textContent = 'No events yet — add some from the manage page.';
+    return;
+  }
+  events.forEach(ev => {
+    const group = document.createElement('div');
+    group.className = 'dot-group';
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const size = SIZES[ev.significance] || 12;
+    dot.style.width = size + 'px';
+    dot.style.height = size + 'px';
+    dot.style.background = COLORS[ev.category] || COLORS.Other;
+    dot.style.boxShadow = `0 0 10px ${COLORS[ev.category] || COLORS.Other}`;
+    const yearLabel = document.createElement('div');
+    yearLabel.className = 'dot-year';
+    yearLabel.textContent = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year;
+    group.appendChild(dot);
+    group.appendChild(yearLabel);
+    group.addEventListener('click', () => showCard(ev));
+    wrapper.appendChild(group);
+  });
+  initScroll();
+}
+
+function showCard(ev) {
+  document.getElementById('card-year').textContent = ev.year < 0 ? Math.abs(ev.year) + ' BC' : 'Year ' + ev.year;
+  document.getElementById('card-title').textContent = ev.title;
+  document.getElementById('card-desc').textContent = ev.description;
+  const cat = document.getElementById('card-category');
+  cat.textContent = ev.category;
+  cat.style.background = (COLORS[ev.category] || COLORS.Other) + '33';
+  cat.style.color = COLORS[ev.category] || COLORS.Other;
+  document.getElementById('card').style.display = 'block';
+}
+
+document.getElementById('close-card').addEventListener('click', () => {
+  document.getElementById('card').style.display = 'none';
+});
+
+function initScroll() {
+  const wrapper = document.getElementById('dots-wrapper');
+  let offset = 0;
+  window.addEventListener('wheel', e => {
+    offset -= e.deltaY * 1.5;
+    const maxScroll = -(wrapper.scrollWidth - window.innerWidth + 400);
+    offset = Math.max(maxScroll, Math.min(0, offset));
+    wrapper.style.transform = `translateX(${offset}px)`;
+  });
+}
+
+loadEvents();
+</script>
+</body>
+</html>
