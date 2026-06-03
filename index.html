@@ -29,7 +29,7 @@
   #timeline-container {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 400px;
     cursor: grab;
     overflow: hidden;
   }
@@ -43,6 +43,7 @@
     width: 100%;
     transform: translateY(-50%);
     pointer-events: none;
+    z-index: 1;
   }
   #dots-wrapper {
     position: absolute;
@@ -51,19 +52,45 @@
     height: 100%;
     display: flex;
     align-items: center;
-    /* Large padding left/right keeps first and last events comfortably in frame */
     padding: 0 45vw; 
-    gap: 120px;
-    transition: transform 0.1s outset;
+    gap: 140px;
+    transition: transform 0.1s ease-out;
     will-change: transform;
+  }
+  .year-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 100%;
+  }
+  .dots-stack {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 20px;
+    position: absolute;
+    bottom: 50%;
+    transform: translateY(10px);
+    z-index: 2;
+  }
+  .dots-stack::before {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    top: 10px;
+    width: 1px;
+    background: linear-gradient(to top, #3a5aff55, transparent);
+    z-index: -1;
   }
   .dot-group {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
     cursor: pointer;
     user-select: none;
+    position: relative;
   }
   .dot {
     border-radius: 50%;
@@ -78,11 +105,12 @@
   }
   .dot-year {
     position: absolute;
-    top: 35px;
-    font-size: 0.75rem;
+    top: 55%;
+    font-size: 0.8rem;
     color: #aac4ff99;
     letter-spacing: 1px;
     white-space: nowrap;
+    pointer-events: none;
   }
   #card {
     display: none;
@@ -168,31 +196,55 @@ function renderTimeline(events) {
     document.getElementById('empty-msg').textContent = 'No events yet — add some from the manage page.';
     return;
   }
+
+  const groupsByYear = {};
   events.forEach(ev => {
-    const group = document.createElement('div');
-    group.className = 'dot-group';
-    const dot = document.createElement('div');
-    dot.className = 'dot';
-    const size = SIZES[ev.significance] || 14;
-    dot.style.width = size + 'px';
-    dot.style.height = size + 'px';
-    dot.style.background = COLORS[ev.category] || COLORS.Other;
-    dot.style.boxShadow = `0 0 10px ${COLORS[ev.category] || COLORS.Other}`;
+    if (!groupsByYear[ev.year]) {
+      groupsByYear[ev.year] = [];
+    }
+    groupsByYear[ev.year].push(ev);
+  });
+
+  const sortedYears = Object.keys(groupsByYear).map(Number).sort((a, b) => a - b);
+
+  sortedYears.forEach(year => {
+    const yearEvents = groupsByYear[year];
+    const column = document.createElement('div');
+    column.className = 'year-column';
+    
+    const stack = document.createElement('div');
+    stack.className = 'dots-stack';
+    
+    yearEvents.forEach(ev => {
+      const group = document.createElement('div');
+      group.className = 'dot-group';
+      
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      const size = SIZES[ev.significance] || 14;
+      dot.style.width = size + 'px';
+      dot.style.height = size + 'px';
+      dot.style.background = COLORS[ev.category] || COLORS.Other;
+      dot.style.boxShadow = `0 0 10px ${COLORS[ev.category] || COLORS.Other}`;
+      
+      group.appendChild(dot);
+      group.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showCard(ev);
+      });
+      
+      stack.appendChild(group);
+    });
     
     const yearLabel = document.createElement('div');
     yearLabel.className = 'dot-year';
-    yearLabel.textContent = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year;
+    yearLabel.textContent = year < 0 ? Math.abs(year) + ' BC' : year;
     
-    group.appendChild(dot);
-    group.appendChild(yearLabel);
-    group.addEventListener('click', (e) => {
-      e.stopPropagation();
-      showCard(ev);
-    });
-    wrapper.appendChild(group);
+    column.appendChild(stack);
+    column.appendChild(yearLabel);
+    wrapper.appendChild(column);
   });
   
-  // Re-initialize tracking dynamics after content is built
   initScroll();
 }
 
@@ -218,14 +270,12 @@ function initScroll() {
   let isDragging = false;
   let startX = 0;
 
-  // Trackpad / Mouse wheel horizontal redirection
   window.addEventListener('wheel', e => {
     const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
     offset -= delta * 1.2;
     applyBoundaries();
   }, { passive: true });
 
-  // Mouse Drag / Touch Swipe implementation
   container.addEventListener('mousedown', e => {
     isDragging = true;
     startX = e.clientX - offset;
@@ -239,7 +289,6 @@ function initScroll() {
 
   window.addEventListener('mouseup', () => isDragging = false);
 
-  // Mobile Touch Support
   container.addEventListener('touchstart', e => {
     isDragging = true;
     startX = e.touches[0].clientX - offset;
@@ -254,7 +303,6 @@ function initScroll() {
   container.addEventListener('touchend', () => isDragging = false);
 
   function applyBoundaries() {
-    // Calculates scrolling space based on current layout runtime width
     const minScroll = -(wrapper.scrollWidth - window.innerWidth);
     offset = Math.max(minScroll, Math.min(0, offset));
     wrapper.style.transform = `translateX(${offset}px)`;
