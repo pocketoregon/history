@@ -70,5 +70,37 @@
     "description": "notinh",
     "category": "Physics",
     "significance": 1
+  },
+  {
+    "id": "ev-ai-1780505657834-0",
+    "year": -585,
+    "title": "Thales Predicts Solar Eclipse",
+    "description": "Thales of Miletus successfully predicted an eclipse of the Sun, marking an early intersection of science and philosophy.",
+    "category": "Astronomy",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780505657834-1",
+    "year": -535,
+    "title": "Pythagoras Establishes Mathematical School",
+    "description": "Pythagoras founded a school dedicated to mathematics and philosophy in what is now southern Italy, profoundly influencing both disciplines.",
+    "category": "Mathematics",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780505657834-2",
+    "year": -530,
+    "title": "Xenophanes Theorizes Earth's Seafaring Past",
+    "description": "After observing seashells on a mountain, Xenophanes deduced that the Earth was once entirely covered by sea.",
+    "category": "Geology",
+    "significance": 3
+  },
+  {
+    "id": "ev-ai-1780505657834-3",
+    "year": -450,
+    "title": "Empedocles Identifies Four Fundamental Elements",
+    "description": "Empedocles theorized that earth, air, fire, and water were the primary components of all matter, influencing future scientific thought.",
+    "category": "Chemistry",
+    "significance": 4
   }
 ]
