@@ -182,7 +182,7 @@ async function submitEvent() {
     allEvents.push({ id: Date.now().toString(), year, title, description: desc, category: cat, significance: sig });
   }
   const ok = await saveEvents(allEvents, `${id ? 'Edit' : 'Add'} event: ${title}`);
-  if (ok) { setStatus('Saved!', '#6bffb8'); clearForm(); renderList(); }
+  if (ok) { setStatus('Saved!', '#6bffb8'); clearForm(); renderList(); startLiveCheck(id || allEvents[allEvents.length-1].id, title); }
   else setStatus('Error saving. Check your token.', '#ff6b6b');
 }
 
@@ -229,13 +229,48 @@ function renderList() {
   if (allEvents.length === 0) { list.innerHTML = '<p style="color:#3a5aff55;font-size:0.85rem;">No events yet.</p>'; return; }
   const sorted = [...allEvents].sort((a, b) => a.year - b.year);
   list.innerHTML = sorted.map(ev => `
-    <div class="event-row">
+    <div class="event-row" id="row-${ev.id}">
       <div><strong>${ev.title}</strong><span>${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year} · ${ev.category}</span></div>
       <div class="event-actions">
+        <span class="live-status" id="status-${ev.id}"></span>
         <button class="btn-edit" onclick="editEvent('${ev.id}')">Edit</button>
         <button class="btn-delete" onclick="deleteEvent('${ev.id}')">Delete</button>
       </div>
     </div>`).join('');
+}
+
+function startLiveCheck(id, title) {
+  const el = document.getElementById(`status-${id}`);
+  if (!el) return;
+  let seconds = 60;
+  el.style.color = '#aac4ff99';
+  el.style.fontSize = '0.75rem';
+  const countdown = setInterval(() => {
+    seconds--;
+    el.textContent = `⏱ ${seconds}s`;
+    if (seconds <= 0) {
+      clearInterval(countdown);
+      el.textContent = '🔄 checking...';
+      pollLiveSite(id, title, el);
+    }
+  }, 1000);
+}
+
+async function pollLiveSite(id, title, el) {
+  const check = async () => {
+    try {
+      const res = await fetch(`https://pocketoregon.github.io/history/events.json?t=` + Date.now());
+      const data = await res.json();
+      const found = data.some(e => e.id === id);
+      if (found) {
+        el.textContent = '✓ live';
+        el.style.color = '#6bffb8';
+      } else {
+        setTimeout(check, 10000);
+      }
+    } catch { setTimeout(check, 10000); }
+  };
+  check();
 }
 
 function setStatus(msg, color) {
