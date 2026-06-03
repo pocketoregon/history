@@ -14,5 +14,13 @@
     "description": "The Large Hadron Collider, the world's largest and highest-energy particle accelerator, was completed by CERN in collaboration with over 10,000 scientists worldwide.",
     "category": "Physics",
     "significance": 3
+  },
+  {
+    "id": "ev-ai-1780502678858-0",
+    "year": 2021,
+    "title": "James Webb Space Telescope Launch",
+    "description": "Webb launched on December 25, orbiting the Sun at the second Lagrange point (L2) to study every phase of cosmic history, from the Big Bang to the evolution of the Solar System.",
+    "category": "Astronomy",
+    "significance": 3
   }
 ]
