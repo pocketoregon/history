@@ -3,117 +3,508 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manage Events</title>
+<title>Event Archivist</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --ink: #1a1410;
+    --paper: #f5f0e8;
+    --aged: #e8e0cc;
+    --sepia: #c4a882;
+    --rust: #8b4513;
+    --gold: #b8860b;
+    --fade: #9c8e7a;
+    --deep: #2c1810;
+    --accent: #5c3317;
+    --green: #2d5a27;
+    --red: #7a1f1f;
+    --border: #c4a88244;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0a1a; color: #fff; font-family: Georgia, serif; padding: 40px 20px; }
-  h1 { color: #aac4ff; letter-spacing: 4px; text-transform: uppercase; font-size: 1.2rem; margin-bottom: 30px; }
-  .section { background: #111630; border: 1px solid #3a5aff33; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-  .section h2 { color: #3a5aff; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
-  label { display: block; color: #aac4ff99; font-size: 0.8rem; margin-bottom: 6px; margin-top: 14px; }
-  input, textarea, select {
-    width: 100%; padding: 10px 14px; background: #0a0a1a;
-    border: 1px solid #3a5aff55; border-radius: 8px;
-    color: #fff; font-size: 0.9rem; font-family: Georgia, serif;
+
+  body {
+    background: var(--paper);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    color: var(--ink);
+    font-family: 'Crimson Pro', serif;
+    min-height: 100vh;
   }
-  textarea { height: 90px; resize: vertical; }
-  input:focus, textarea:focus, select:focus { outline: none; border-color: #aac4ff; }
-  button {
-    margin-top: 20px; padding: 10px 24px; background: #3a5aff;
-    color: #fff; border: none; border-radius: 8px;
-    font-size: 0.9rem; cursor: pointer; letter-spacing: 1px;
+
+  /* Decorative top rule */
+  body::before {
+    content: '';
+    display: block;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, var(--rust) 0, var(--rust) 40px, var(--gold) 40px, var(--gold) 42px, var(--rust) 42px, var(--rust) 80px);
   }
-  button:hover { background: #5a7aff; }
-  #status { margin-top: 12px; font-size: 0.85rem; color: #6bffb8; min-height: 20px; }
-  #events-list { margin-top: 10px; }
-  .event-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 14px; border-bottom: 1px solid #3a5aff22;
-    font-size: 0.85rem;
+
+  .wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
   }
-  .event-row:hover { background: #ffffff08; }
-  .event-row span { color: #aac4ff99; font-size: 0.75rem; margin-left: 10px; }
-  .event-actions { display: flex; gap: 8px; align-items: center; }
-  .live-status { font-family: monospace; font-size: 0.75rem; }
-  .btn-edit { background: #3a5aff; padding: 4px 12px; font-size: 0.75rem; margin-top: 0; }
-  .btn-delete { background: #ff4444; padding: 4px 12px; font-size: 0.75rem; margin-top: 0; }
+
+  /* Header */
+  .masthead {
+    text-align: center;
+    margin-bottom: 52px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--sepia);
+    position: relative;
+  }
+  .masthead::after {
+    content: '✦';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--paper);
+    padding: 0 12px;
+    color: var(--sepia);
+    font-size: 0.9rem;
+  }
+  .masthead .vol {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    color: var(--fade);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .masthead h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--deep);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+  .masthead .sub {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--fade);
+    font-style: italic;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--fade);
+    text-decoration: none;
+    margin-bottom: 40px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--rust); }
+  .back-link::before { content: '←'; }
+
+  /* Sections */
+  .section {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 2px 2px 0 var(--aged);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.1s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.2s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    padding: 14px 24px;
+    background: var(--aged);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-header h2 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .section-header .icon {
+    color: var(--sepia);
+    font-size: 0.9rem;
+  }
+
+  .section-body { padding: 24px; }
+
+  /* Form elements */
+  label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--fade);
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  input[type=text], input[type=number], input[type=password], textarea, select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--ink);
+    font-size: 1rem;
+    font-family: 'Crimson Pro', serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  textarea { height: 100px; resize: vertical; line-height: 1.6; }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--rust);
+    box-shadow: 0 0 0 3px rgba(139,69,19,0.08);
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239c8e7a'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 20px;
+    padding: 10px 22px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--paper);
+    box-shadow: 2px 2px 0 var(--rust);
+  }
+  .btn-primary:hover {
+    background: var(--rust);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--accent);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--fade);
+    border: 1px solid var(--border);
+    margin-left: 10px;
+    box-shadow: none;
+  }
+  .btn-secondary:hover { border-color: var(--fade); color: var(--ink); }
+  .btn-approve {
+    background: var(--green);
+    color: #fff;
+    box-shadow: 2px 2px 0 #1a3a16;
+  }
+  .btn-approve:hover {
+    background: #234d1e;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 #1a3a16;
+  }
+
+  /* Token bar */
   .token-bar { display: flex; gap: 10px; align-items: flex-end; }
   .token-bar input { flex: 1; }
-  .token-bar button { margin-top: 0; }
-  #ai-preview { margin-top: 16px; width: 100%; }
-  .ai-event-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 14px; border: 1px solid #3a5aff33;
-    border-radius: 8px; margin-bottom: 10px; background: #0a0a1a;
-    width: 100%; box-sizing: border-box;
+  .token-bar .btn { margin-top: 0; }
+
+  .status-msg {
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    min-height: 18px;
   }
-  .ai-event-item input[type=checkbox] {
-    margin-top: 4px; accent-color: #3a5aff;
-    flex-shrink: 0; width: 16px; height: 16px; cursor: pointer;
+
+  /* Two-col grid for form */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
   }
-  .ai-event-item .ai-info { flex: 1; font-size: 0.85rem; min-width: 0; }
-  .ai-event-item .ai-info strong { color: #aac4ff; display: block; margin-bottom: 6px; }
-  .ai-event-item .ai-info p { color: #ccc; margin-top: 4px; line-height: 1.6; word-wrap: break-word; }
-  a { color: #3a5aff55; font-size: 0.75rem; text-decoration: none; display: block; margin-bottom: 30px; }
-  a:hover { color: #aac4ff; }
+  .form-grid .full { grid-column: 1 / -1; }
+
+  /* AI preview items */
+  #ai-preview { margin-top: 20px; }
+
+  .ai-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 10px;
+    background: var(--paper);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .ai-card:hover { border-color: var(--sepia); box-shadow: 1px 1px 0 var(--aged); }
+  .ai-card input[type=checkbox] {
+    flex-shrink: 0;
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--rust);
+    cursor: pointer;
+  }
+  .ai-card-body { flex: 1; min-width: 0; }
+  .ai-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--deep);
+    font-weight: 700;
+  }
+  .ai-card-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--rust);
+    margin-left: 8px;
+    letter-spacing: 1px;
+  }
+  .ai-card-desc {
+    font-size: 0.92rem;
+    color: var(--accent);
+    line-height: 1.6;
+    margin-top: 6px;
+    font-style: italic;
+  }
+  .ai-card-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .ai-card-meta span {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--fade);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  /* Events list */
+  #events-list { margin-top: 4px; }
+
+  .event-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    gap: 12px;
+  }
+  .event-row:last-child { border-bottom: none; }
+  .event-row:hover { background: #faf7f0; margin: 0 -24px; padding: 13px 24px; }
+
+  .event-row-info { flex: 1; min-width: 0; }
+  .event-row-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--deep);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .event-row-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--fade);
+    letter-spacing: 1px;
+    margin-top: 3px;
+  }
+
+  .event-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .live-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--fade);
+    min-width: 60px;
+    text-align: right;
+  }
+  .btn-sm {
+    padding: 4px 12px;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    margin-top: 0;
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .btn-sm-edit { color: var(--accent); border-color: var(--border); }
+  .btn-sm-edit:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .btn-sm-del { color: var(--red); border-color: #c4888844; }
+  .btn-sm-del:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* Divider ornament */
+  .ornament {
+    text-align: center;
+    color: var(--sepia);
+    font-size: 0.75rem;
+    letter-spacing: 8px;
+    margin: 4px 0 16px;
+    opacity: 0.6;
+  }
+
+  .empty-note {
+    font-style: italic;
+    color: var(--fade);
+    font-size: 0.9rem;
+    padding: 12px 0;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
-<h1>Manage Events</h1>
-<a href="index.html">← back to timeline</a>
+<div class="wrapper">
 
-<div class="section">
-  <h2>GitHub Token</h2>
-  <label>Paste your Personal Access Token (stays in browser only)</label>
-  <div class="token-bar">
-    <input type="password" id="token-input" placeholder="github_pat_...">
-    <button onclick="saveToken()">Save</button>
+  <div class="masthead">
+    <div class="vol">Scientific Record — Management Console</div>
+    <h1>The <em>Archivist</em></h1>
+    <div class="sub">Curate, annotate, and publish events to the living timeline</div>
   </div>
-  <div id="token-status" style="margin-top:8px;font-size:0.8rem;color:#6bffb8;"></div>
-</div>
 
-<div class="section">
-  <h2 id="form-title">Add Event Manually</h2>
-  <input type="hidden" id="edit-id">
-  <label>Year (use negative for BC, e.g. -300)</label>
-  <input type="number" id="f-year" placeholder="e.g. 1687">
-  <label>Title</label>
-  <input type="text" id="f-title" placeholder="e.g. Newton's Principia Published">
-  <label>Description</label>
-  <textarea id="f-desc" placeholder="What happened and why it matters..."></textarea>
-  <label>Category</label>
-  <select id="f-cat">
-    <option>Physics</option>
-    <option>Biology</option>
-    <option>Chemistry</option>
-    <option>Astronomy</option>
-    <option>Mathematics</option>
-    <option>Other</option>
-  </select>
-  <label>Significance</label>
-  <select id="f-sig">
-    <option value="1">1 — Minor</option>
-    <option value="2">2 — Notable</option>
-    <option value="3">3 — Major</option>
-  </select>
-  <button onclick="submitEvent()">Save Event</button>
-  <button onclick="cancelEdit()" id="cancel-btn" style="display:none;background:#555;margin-left:10px;">Cancel</button>
-  <div id="status"></div>
-</div>
+  <a class="back-link" href="index.html"> Back to Timeline</a>
 
-<div class="section">
-  <h2>AI Extract from Book Page</h2>
-  <label>Paste text from the book page</label>
-  <textarea id="ai-text" style="height:140px;" placeholder="Paste a paragraph or page of text here..."></textarea>
-  <button onclick="extractWithAI()">Extract Events with AI</button>
-  <div id="ai-status" style="margin-top:10px;font-size:0.85rem;color:#aac4ff99;"></div>
-  <div id="ai-preview"></div>
-  <button id="ai-approve-btn" style="display:none;background:#6bffb8;color:#0a0a1a;" onclick="approveAIEvents()">Add Approved Events</button>
-</div>
+  <!-- TOKEN -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">🔑</span>
+      <h2>GitHub Credentials</h2>
+    </div>
+    <div class="section-body">
+      <label>Personal Access Token — stored locally in your browser only</label>
+      <div class="token-bar">
+        <input type="password" id="token-input" placeholder="github_pat_...">
+        <button class="btn btn-primary" onclick="saveToken()">Save</button>
+      </div>
+      <div id="token-status" class="status-msg" style="color: var(--green);"></div>
+    </div>
+  </div>
 
-<div class="section">
-  <h2>Existing Events</h2>
-  <div id="events-list"><p style="color:#3a5aff55;font-size:0.85rem;">Loading...</p></div>
+  <!-- MANUAL FORM -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">✒</span>
+      <h2 id="form-title">Record New Event</h2>
+    </div>
+    <div class="section-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-grid">
+        <div>
+          <label>Year — use negative for BC</label>
+          <input type="number" id="f-year" placeholder="e.g. 1687">
+        </div>
+        <div>
+          <label>Category</label>
+          <select id="f-cat">
+            <option>Physics</option>
+            <option>Biology</option>
+            <option>Chemistry</option>
+            <option>Astronomy</option>
+            <option>Mathematics</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Title</label>
+          <input type="text" id="f-title" placeholder="e.g. Newton's Principia Published">
+        </div>
+        <div class="full">
+          <label>Description</label>
+          <textarea id="f-desc" placeholder="What happened and why it matters..."></textarea>
+        </div>
+        <div>
+          <label>Significance</label>
+          <select id="f-sig">
+            <option value="1">I — Minor</option>
+            <option value="2">II — Notable</option>
+            <option value="3">III — Major</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary" onclick="submitEvent()">Commit to Record</button>
+        <button class="btn btn-secondary" onclick="cancelEdit()" id="cancel-btn" style="display:none;">Discard</button>
+      </div>
+      <div id="status" class="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- AI EXTRACT -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">⚗</span>
+      <h2>Extract via AI Analysis</h2>
+    </div>
+    <div class="section-body">
+      <label>Source text — paste a paragraph or page</label>
+      <textarea id="ai-text" style="height:150px;" placeholder="Paste any passage of historical or scientific text here..."></textarea>
+      <button class="btn btn-primary" onclick="extractWithAI()">Analyse & Extract</button>
+      <div id="ai-status" class="status-msg" style="color: var(--fade); font-style: italic;"></div>
+      <div id="ai-preview"></div>
+      <button id="ai-approve-btn" class="btn btn-approve" style="display:none;" onclick="approveAIEvents()">✓ Add Selected Events</button>
+    </div>
+  </div>
+
+  <!-- EXISTING EVENTS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="icon">📜</span>
+      <h2>The Record</h2>
+    </div>
+    <div class="section-body">
+      <div class="ornament">· · ·</div>
+      <div id="events-list"><p class="empty-note">Loading entries from the archive…</p></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -126,7 +517,8 @@ function saveToken() {
   const t = document.getElementById('token-input').value.trim();
   if (!t) return;
   localStorage.setItem('gh_token', t);
-  document.getElementById('token-status').textContent = 'Token saved for this session.';
+  document.getElementById('token-status').textContent = '✓ Token saved for this session.';
+  document.getElementById('token-status').style.color = 'var(--green)';
 }
 
 function getToken() {
@@ -137,7 +529,7 @@ window.onload = () => {
   const t = getToken();
   if (t) {
     document.getElementById('token-input').value = t;
-    document.getElementById('token-status').textContent = 'Token loaded.';
+    document.getElementById('token-status').textContent = '✓ Token loaded.';
   }
   loadEvents();
 };
@@ -174,9 +566,9 @@ async function submitEvent() {
   const desc = document.getElementById('f-desc').value.trim();
   const cat = document.getElementById('f-cat').value;
   const sig = parseInt(document.getElementById('f-sig').value);
-  if (!year || !title || !desc) { setStatus('Please fill all fields.', '#ff6b6b'); return; }
-  setStatus('Saving...', '#aac4ff99');
-  
+  if (!year || !title || !desc) { setStatus('Please fill all fields.', 'var(--red)'); return; }
+  setStatus('Committing to record…', 'var(--fade)');
+
   let targetedId = id;
   if (id) {
     const idx = allEvents.findIndex(e => e.id === id);
@@ -185,15 +577,15 @@ async function submitEvent() {
     targetedId = 'ev-' + Date.now();
     allEvents.push({ id: targetedId, year, title, description: desc, category: cat, significance: sig });
   }
-  
+
   const ok = await saveEvents(allEvents, `${id ? 'Edit' : 'Add'} event: ${title}`);
-  if (ok) { 
-    setStatus('Saved!', '#6bffb8'); 
-    clearForm(); 
-    renderList(); 
-    startLiveCheck(targetedId, title); 
+  if (ok) {
+    setStatus('✓ Recorded successfully.', 'var(--green)');
+    clearForm();
+    renderList();
+    startLiveCheck(targetedId, title);
   } else {
-    setStatus('Error saving. Check your token.', '#ff6b6b');
+    setStatus('Error saving. Check your token.', 'var(--red)');
   }
 }
 
@@ -206,14 +598,12 @@ function editEvent(id) {
   document.getElementById('f-desc').value = ev.description;
   document.getElementById('f-cat').value = ev.category;
   document.getElementById('f-sig').value = ev.significance;
-  document.getElementById('form-title').textContent = 'Edit Event';
-  document.getElementById('cancel-btn').style.display = 'inline-block';
+  document.getElementById('form-title').textContent = 'Amend Existing Entry';
+  document.getElementById('cancel-btn').style.display = 'inline-flex';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function cancelEdit() {
-  clearForm();
-}
+function cancelEdit() { clearForm(); }
 
 function clearForm() {
   document.getElementById('edit-id').value = '';
@@ -222,13 +612,13 @@ function clearForm() {
   document.getElementById('f-desc').value = '';
   document.getElementById('f-cat').value = 'Physics';
   document.getElementById('f-sig').value = '2';
-  document.getElementById('form-title').textContent = 'Add Event Manually';
+  document.getElementById('form-title').textContent = 'Record New Event';
   document.getElementById('cancel-btn').style.display = 'none';
   document.getElementById('status').textContent = '';
 }
 
 async function deleteEvent(id) {
-  if (!confirm('Delete this event?')) return;
+  if (!confirm('Remove this entry from the record?')) return;
   allEvents = allEvents.filter(e => e.id !== id);
   const ok = await saveEvents(allEvents, 'Delete event');
   if (ok) { renderList(); }
@@ -237,15 +627,21 @@ async function deleteEvent(id) {
 
 function renderList() {
   const list = document.getElementById('events-list');
-  if (allEvents.length === 0) { list.innerHTML = '<p style="color:#3a5aff55;font-size:0.85rem;">No events yet.</p>'; return; }
+  if (allEvents.length === 0) {
+    list.innerHTML = '<p class="empty-note">No entries yet. Begin recording.</p>';
+    return;
+  }
   const sorted = [...allEvents].sort((a, b) => a.year - b.year);
   list.innerHTML = sorted.map(ev => `
     <div class="event-row" id="row-${ev.id}">
-      <div><strong>${ev.title}</strong><span>${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year} · ${ev.category}</span></div>
+      <div class="event-row-info">
+        <div class="event-row-title">${ev.title}</div>
+        <div class="event-row-meta">${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year} &nbsp;·&nbsp; ${ev.category} &nbsp;·&nbsp; Sig. ${ev.significance}</div>
+      </div>
       <div class="event-actions">
-        <span class="live-status" id="status-${ev.id}"></span>
-        <button class="btn-edit" onclick="editEvent('${ev.id}')">Edit</button>
-        <button class="btn-delete" onclick="deleteEvent('${ev.id}')">Delete</button>
+        <span class="live-badge" id="status-${ev.id}"></span>
+        <button class="btn-sm btn-sm-edit" onclick="editEvent('${ev.id}')">Edit</button>
+        <button class="btn-sm btn-sm-del" onclick="deleteEvent('${ev.id}')">Delete</button>
       </div>
     </div>`).join('');
 }
@@ -254,14 +650,13 @@ function startLiveCheck(id, title) {
   const el = document.getElementById(`status-${id}`);
   if (!el) return;
   let seconds = 60;
-  el.style.color = '#aac4ff99';
-  el.style.fontSize = '0.75rem';
+  el.style.color = 'var(--fade)';
   const countdown = setInterval(() => {
     seconds--;
     el.textContent = `⏱ ${seconds}s`;
     if (seconds <= 0) {
       clearInterval(countdown);
-      el.textContent = '🔄 checking...';
+      el.textContent = '↻ checking';
       pollLiveSite(id, title, el);
     }
   }, 1000);
@@ -275,7 +670,7 @@ async function pollLiveSite(id, title, el) {
       const found = data.some(e => e.id === id);
       if (found) {
         el.textContent = '✓ live';
-        el.style.color = '#6bffb8';
+        el.style.color = 'var(--green)';
       } else {
         setTimeout(check, 10000);
       }
@@ -294,8 +689,8 @@ async function extractWithAI() {
   const text = document.getElementById('ai-text').value.trim();
   if (!text) return;
   const token = getToken();
-  if (!token) { document.getElementById('ai-status').textContent = 'Save your token first.'; return; }
-  document.getElementById('ai-status').textContent = 'Analyzing with AI...';
+  if (!token) { document.getElementById('ai-status').textContent = 'Save your GitHub token first.'; return; }
+  document.getElementById('ai-status').textContent = 'Analysing passage…';
   document.getElementById('ai-preview').innerHTML = '';
   document.getElementById('ai-approve-btn').style.display = 'none';
 
@@ -307,7 +702,7 @@ async function extractWithAI() {
         model: 'gpt-4o',
         messages: [{
           role: 'user',
-          content: `Extract all historical science events from the text below. Return ONLY a valid JSON array. Do not use markdown blocks. Do not use double quotes inside your text values; if you need to use quotes inside a title or description, use single quotes ('). 
+          content: `Extract all historical science events from the text below. Return ONLY a valid JSON array. Do not use markdown blocks. Do not use double quotes inside your text values; if you need to use quotes inside a title or description, use single quotes (').
 
 Each item in the array must be an object matching this format exactly:
 {
@@ -332,21 +727,20 @@ ${text}`
       aiExtracted = JSON.parse(cleaned);
     } catch (e) {
       try {
-        cleaned = cleaned.replace(/(?<=:\s*")(.+?)(?="\s*[,}\n])/g, (match) => {
-          return match.replace(/"/g, "'");
-        });
+        cleaned = cleaned.replace(/(?<=:\s*")(.+?)(?="\s*[,}\n])/g, (match) => match.replace(/"/g, "'"));
         aiExtracted = JSON.parse(cleaned);
       } catch (innerError) {
         throw new Error("JSON format invalid. Try clicking Extract again!");
       }
     }
+
     if (aiExtracted.length === 0) {
-      document.getElementById('ai-status').textContent = 'No events found in this text. Try a different paragraph.';
+      document.getElementById('ai-status').textContent = 'No events found in this passage. Try different text.';
       document.getElementById('ai-approve-btn').style.display = 'none';
       return;
     }
     renderAIPreview();
-    document.getElementById('ai-status').textContent = `Found ${aiExtracted.length} event${aiExtracted.length > 1 ? 's' : ''}. Check the ones you want to add.`;
+    document.getElementById('ai-status').textContent = `Found ${aiExtracted.length} event${aiExtracted.length > 1 ? 's' : ''}. Select the ones to commit.`;
   } catch(e) {
     document.getElementById('ai-status').textContent = 'Error: ' + e.message;
   }
@@ -355,38 +749,42 @@ ${text}`
 function renderAIPreview() {
   const preview = document.getElementById('ai-preview');
   preview.innerHTML = aiExtracted.map((ev, i) => `
-    <div class="ai-event-item">
+    <div class="ai-card">
       <input type="checkbox" id="ai-cb-${i}" checked>
-      <div class="ai-info">
-        <strong>${ev.title} (${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year})</strong>
-        <p>${ev.description}</p>
-        <span style="font-size:0.75rem;color:#3a5aff;">${ev.category} · Significance ${ev.significance}</span>
+      <div class="ai-card-body">
+        <div>
+          <span class="ai-card-title">${ev.title}</span>
+          <span class="ai-card-year">${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year}</span>
+        </div>
+        <div class="ai-card-desc">${ev.description}</div>
+        <div class="ai-card-meta">
+          <span>${ev.category}</span>
+          <span>Significance ${ev.significance}</span>
+        </div>
       </div>
     </div>`).join('');
-  document.getElementById('ai-approve-btn').style.display = 'inline-block';
+  document.getElementById('ai-approve-btn').style.display = 'inline-flex';
 }
 
 async function approveAIEvents() {
   const approved = aiExtracted.filter((_, i) => document.getElementById(`ai-cb-${i}`).checked);
   if (approved.length === 0) return;
-  
+
   const targetedIds = [];
   approved.forEach((ev, i) => {
     const cleanId = 'ev-ai-' + Date.now() + '-' + i;
     targetedIds.push({ id: cleanId, title: ev.title });
     allEvents.push({ id: cleanId, ...ev });
   });
-  
+
   const ok = await saveEvents(allEvents, `AI extracted ${approved.length} events`);
   if (ok) {
-    document.getElementById('ai-status').textContent = `Added ${approved.length} events!`;
+    document.getElementById('ai-status').textContent = `✓ ${approved.length} event${approved.length > 1 ? 's' : ''} added to the record.`;
     document.getElementById('ai-preview').innerHTML = '';
     document.getElementById('ai-approve-btn').style.display = 'none';
     document.getElementById('ai-text').value = '';
     renderList();
-    targetedIds.forEach(target => {
-      startLiveCheck(target.id, target.title);
-    });
+    targetedIds.forEach(target => startLiveCheck(target.id, target.title));
   } else {
     document.getElementById('ai-status').textContent = 'Error saving. Check your token.';
   }
