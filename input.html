@@ -268,7 +268,8 @@ async function extractWithAI() {
     });
     const data = await res.json();
     const raw = data.choices[0].message.content.trim();
-    aiExtracted = JSON.parse(raw);
+    const cleaned = raw.replace(/^```json\s*|^```\s*|```$/gm, '').trim();
+aiExtracted = JSON.parse(cleaned);
     renderAIPreview();
     document.getElementById('ai-status').textContent = `Found ${aiExtracted.length} events. Check the ones you want to add.`;
   } catch(e) {
