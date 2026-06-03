@@ -334,5 +334,69 @@
     "description": "British naturalist Charles Darwin published groundbreaking ideas on evolution and the origins of species.",
     "category": "Biology",
     "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508790741-0",
+    "year": 1905,
+    "title": "Theory of Relativity Proposed",
+    "description": "Albert Einstein proposed his theory of relativity, revolutionizing classical physics by ending the idea of an absolute time and space.",
+    "category": "Physics",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508790741-1",
+    "year": 1927,
+    "title": "Uncertainty Principle Demonstrated",
+    "description": "Werner Heisenberg demonstrated the uncertainty principle, showing fundamental limits in measuring certain properties of the universe.",
+    "category": "Physics",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508790741-2",
+    "year": 1920,
+    "title": "Revelation of the Expanding Universe",
+    "description": "Stronger telescopes provided evidence that the universe is expanding, leading to the discovery of the Big Bang theory.",
+    "category": "Astronomy",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508790741-3",
+    "year": 1930,
+    "title": "Black Hole Concept Emerged",
+    "description": "The concept of black holes began to develop as a result of theoretical advancements in astrophysics.",
+    "category": "Astronomy",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508790741-4",
+    "year": 1970,
+    "title": "Dark Matter and Dark Energy Detection",
+    "description": "Theories emerged suggesting the presence of dark matter and dark energy as dominant constituents of the universe.",
+    "category": "Astronomy",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508790741-5",
+    "year": 1992,
+    "title": "Exoplanets Discovered",
+    "description": "Astronomers discovered the first planets orbiting distant stars, opening possibilities of finding extraterrestrial life.",
+    "category": "Astronomy",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508790741-6",
+    "year": 1936,
+    "title": "Alan Turing's Universal Computing Machine Concept",
+    "description": "Alan Turing formulated the concept of a universal computing machine, laying the groundwork for modern computers.",
+    "category": "Computer Science",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508790741-7",
+    "year": 1989,
+    "title": "Development of the World Wide Web",
+    "description": "The worldwide web was developed, revolutionizing communication and information sharing.",
+    "category": "Technology",
+    "significance": 5
   }
 ]
