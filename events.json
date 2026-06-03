@@ -70,5 +70,13 @@
     "description": "notinh",
     "category": "Physics",
     "significance": 1
+  },
+  {
+    "id": "ev-ai-1780504555084-0",
+    "year": 1682,
+    "title": "Edmond Halley Observes Comet",
+    "description": "English astronomer Edmond Halley studied the comet of 1682 and laid the foundation for understanding periodic comet appearances.",
+    "category": "Astronomy",
+    "significance": 3
   }
 ]
