@@ -262,5 +262,77 @@
     "description": "Antoine Lavoisier discovered the role of oxygen in combustion, discrediting the old phlogiston theory and advancing chemical science.",
     "category": "Chemistry",
     "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508368778-0",
+    "year": 1770,
+    "title": "Discovery of Oxygen's Role in Combustion",
+    "description": "French chemist Antoine Lavoisier discredited the phlogiston theory and discovered the role of oxygen in combustion.",
+    "category": "Chemistry",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508368778-1",
+    "year": 1803,
+    "title": "Atomic Theory Proposal",
+    "description": "British meteorologist John Dalton proposed the idea that each element consisted of unique atoms and created the concept of atomic weights.",
+    "category": "Chemistry",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508368778-2",
+    "year": 1860,
+    "title": "Development of Molecular Structure Theory",
+    "description": "German chemist August Kekulé developed the basis of molecular structure, advancing the understanding of chemical bonding.",
+    "category": "Chemistry",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508368778-3",
+    "year": 1869,
+    "title": "Creation of the Periodic Table",
+    "description": "Russian inventor Dmitri Mendeleev laid out the first generally accepted periodic table of the elements, organizing them based on atomic weights and properties.",
+    "category": "Chemistry",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508368778-4",
+    "year": 1799,
+    "title": "Invention of the Electric Battery",
+    "description": "Italian scientist Alessandro Volta invented the electric battery, opening new fields in science and technology.",
+    "category": "Physics",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508368778-5",
+    "year": 1820,
+    "title": "Discovery of Electromagnetism",
+    "description": "Danish physicist Hans Christian Ørsted and British scientist Michael Faraday discovered electromagnetism, leading to advancements such as the electric motor.",
+    "category": "Physics",
+    "significance": 5
+  },
+  {
+    "id": "ev-ai-1780508368778-6",
+    "year": 1830,
+    "title": "Founding of Thermodynamics",
+    "description": "Classical physics principles were applied to heat, the speed of light, and energy transfer, developing into the science of thermodynamics.",
+    "category": "Physics",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508368778-7",
+    "year": 1823,
+    "title": "Advances in Paleontology",
+    "description": "British fossil collector Mary Anning became renowned for her discoveries, contributing significantly to the field of paleontology.",
+    "category": "Earth Sciences",
+    "significance": 4
+  },
+  {
+    "id": "ev-ai-1780508368778-8",
+    "year": 1859,
+    "title": "Theory of Evolution",
+    "description": "British naturalist Charles Darwin published groundbreaking ideas on evolution and the origins of species.",
+    "category": "Biology",
+    "significance": 5
   }
 ]
