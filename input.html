@@ -303,8 +303,19 @@ async function extractWithAI() {
         model: 'gpt-4o',
         messages: [{
           role: 'user',
-          content: `Extract all historical science events from the text below. Return ONLY a JSON array, no markdown, no explanation. Each item must have: year (number, negative for BC), title (string), description (string, 1-2 sentences), category (one of: Physics, Biology, Chemistry, Astronomy, Mathematics, Other), significance (1, 2, or 3).\n\nText:\n${text}`
-        }],
+          content: `Extract all historical science events from the text below. Return ONLY a valid JSON array. Do not use markdown blocks. Do not use double quotes inside your text values; if you need to use quotes inside a title or description, use single quotes ('). 
+
+Each item in the array must be an object matching this format exactly:
+{
+  "year": 2021,
+  "title": "James Webb Space Telescope Launch",
+  "description": "The space telescope was launched on December 25, orbiting the Sun at the L2 Lagrange point to study every phase of cosmic history.",
+  "category": "Astronomy",
+  "significance": 3
+}
+
+Text to analyze:
+${text}`
         max_tokens: 2000
       })
     });
