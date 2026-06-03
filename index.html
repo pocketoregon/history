@@ -24,12 +24,14 @@
     text-transform: uppercase;
     margin-bottom: 60px;
     opacity: 0.7;
+    user-select: none;
   }
   #timeline-container {
     position: relative;
     width: 100%;
     height: 200px;
     cursor: grab;
+    overflow: hidden;
   }
   #timeline-container:active { cursor: grabbing; }
   #line {
@@ -39,6 +41,8 @@
     height: 2px;
     background: linear-gradient(to right, transparent, #3a5aff, #aac4ff, #3a5aff, transparent);
     width: 100%;
+    transform: translateY(-50%);
+    pointer-events: none;
   }
   #dots-wrapper {
     position: absolute;
@@ -47,9 +51,10 @@
     height: 100%;
     display: flex;
     align-items: center;
-    padding: 0 200px;
-    gap: 80px;
-    transition: transform 0.1s ease;
+    /* Large padding left/right keeps first and last events comfortably in frame */
+    padding: 0 45vw; 
+    gap: 120px;
+    transition: transform 0.1s outset;
     will-change: transform;
   }
   .dot-group {
@@ -58,6 +63,7 @@
     align-items: center;
     position: relative;
     cursor: pointer;
+    user-select: none;
   }
   .dot {
     border-radius: 50%;
@@ -71,10 +77,12 @@
     box-shadow: 0 0 20px #aac4ff, 0 0 40px #3a5aff;
   }
   .dot-year {
-    margin-top: 10px;
-    font-size: 0.7rem;
+    position: absolute;
+    top: 35px;
+    font-size: 0.75rem;
     color: #aac4ff99;
     letter-spacing: 1px;
+    white-space: nowrap;
   }
   #card {
     display: none;
@@ -140,13 +148,17 @@ const COLORS = {
   Physics: '#ff6b6b', Biology: '#6bffb8', Chemistry: '#ffd36b',
   Astronomy: '#6baeff', Mathematics: '#d36bff', Other: '#aac4ff'
 };
-const SIZES = { 1: 10, 2: 14, 3: 20 };
+const SIZES = { 1: 12, 2: 18, 3: 26 };
 
 async function loadEvents() {
-  const res = await fetch('events.json?t=' + Date.now());
-  const events = await res.json();
-  events.sort((a, b) => a.year - b.year);
-  renderTimeline(events);
+  try {
+    const res = await fetch('events.json?t=' + Date.now());
+    const events = await res.json();
+    events.sort((a, b) => a.year - b.year);
+    renderTimeline(events);
+  } catch (err) {
+    document.getElementById('empty-msg').textContent = 'Error loading events. Make sure events.json exists.';
+  }
 }
 
 function renderTimeline(events) {
@@ -161,19 +173,26 @@ function renderTimeline(events) {
     group.className = 'dot-group';
     const dot = document.createElement('div');
     dot.className = 'dot';
-    const size = SIZES[ev.significance] || 12;
+    const size = SIZES[ev.significance] || 14;
     dot.style.width = size + 'px';
     dot.style.height = size + 'px';
     dot.style.background = COLORS[ev.category] || COLORS.Other;
     dot.style.boxShadow = `0 0 10px ${COLORS[ev.category] || COLORS.Other}`;
+    
     const yearLabel = document.createElement('div');
     yearLabel.className = 'dot-year';
     yearLabel.textContent = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year;
+    
     group.appendChild(dot);
     group.appendChild(yearLabel);
-    group.addEventListener('click', () => showCard(ev));
+    group.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showCard(ev);
+    });
     wrapper.appendChild(group);
   });
+  
+  // Re-initialize tracking dynamics after content is built
   initScroll();
 }
 
@@ -193,14 +212,53 @@ document.getElementById('close-card').addEventListener('click', () => {
 });
 
 function initScroll() {
+  const container = document.getElementById('timeline-container');
   const wrapper = document.getElementById('dots-wrapper');
   let offset = 0;
+  let isDragging = false;
+  let startX = 0;
+
+  // Trackpad / Mouse wheel horizontal redirection
   window.addEventListener('wheel', e => {
-    offset -= e.deltaY * 1.5;
-    const maxScroll = -(wrapper.scrollWidth - window.innerWidth + 400);
-    offset = Math.max(maxScroll, Math.min(0, offset));
-    wrapper.style.transform = `translateX(${offset}px)`;
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    offset -= delta * 1.2;
+    applyBoundaries();
+  }, { passive: true });
+
+  // Mouse Drag / Touch Swipe implementation
+  container.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.clientX - offset;
   });
+
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    offset = e.clientX - startX;
+    applyBoundaries();
+  });
+
+  window.addEventListener('mouseup', () => isDragging = false);
+
+  // Mobile Touch Support
+  container.addEventListener('touchstart', e => {
+    isDragging = true;
+    startX = e.touches[0].clientX - offset;
+  }, { passive: true });
+
+  container.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    offset = e.touches[0].clientX - startX;
+    applyBoundaries();
+  }, { passive: true });
+
+  container.addEventListener('touchend', () => isDragging = false);
+
+  function applyBoundaries() {
+    // Calculates scrolling space based on current layout runtime width
+    const minScroll = -(wrapper.scrollWidth - window.innerWidth);
+    offset = Math.max(minScroll, Math.min(0, offset));
+    wrapper.style.transform = `translateX(${offset}px)`;
+  }
 }
 
 loadEvents();
