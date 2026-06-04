@@ -282,7 +282,7 @@
   const REPO_DEFAULT    = 'pocketoregon/history';
   const FILE_PATH       = 'index.html';
   const OPENROUTER_URL  = 'https://openrouter.ai/api/v1/chat/completions';
-  const OPENROUTER_MODEL = 'meta-llama/llama-4-maverick:free';
+  const OPENROUTER_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
 
   const STORAGE_CTX  = 'aie_ctx';
   const STORAGE_PAT  = 'aie_pat';
