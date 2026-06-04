@@ -219,13 +219,6 @@
     border-color: #fff;
   }
 
-  /* --- DATE SECTION --- */
-  #current-date {
-    color: #fff;
-    font-size: 0.8rem;
-    text-align: center;
-    margin: 1rem 0;
-  }
 </style>
 </head>
 <body>
@@ -235,8 +228,6 @@
   <h1>The Living Timeline</h1>
   <p></p>
 </header>
-
-<div id="current-date"></div>
 
 <div id="timeline-container">
   <div id="line"></div>
@@ -360,14 +351,7 @@ function initScroll() {
   }
 }
 
-function displayCurrentDate() {
-  const date = new Date();
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  document.getElementById('current-date').textContent = date.toLocaleDateString(undefined, options);
-}
-
 loadEvents();
-displayCurrentDate();
 </script>
 
 <script src="ai-editor.js"></script>
