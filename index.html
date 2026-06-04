@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Event Archivist — Timeline</title>
+<title>Event Archivist â Timeline</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
@@ -401,9 +401,8 @@
 <body>
 
 <header>
-  <div class="console-meta">Scientific Record — Visualizer Console</div>
+  <div class="console-meta">Scientific Record â Visualizer Console</div>
   <h1>The Living Timeline</h1>
-  <p>Curate, annotate, and publish events to the living timeline</p>
 </header>
 
 <div id="timeline-container">
@@ -413,7 +412,7 @@
 <p id="empty-msg"></p>
 
 <div id="the-details">
-  <button id="close-card">✕</button>
+  <button id="close-card">â</button>
   <div class="panel-title">Inspection Node</div>
   <h2 id="card-title"></h2>
   <p id="card-desc"></p>
@@ -424,11 +423,11 @@
 </div>
 
 <footer>
-  <span class="system-status">System Operational ⚗</span>
-  <a class="input-link" href="input.html">🔑 Manage Events</a>
+  <span class="system-status">System Operational â</span>
+  <a class="input-link" href="input.html">ð Manage Events</a>
 </footer>
 
-<!-- ── AI EDITOR DOM ─────────────────────────────────────── -->
+<!-- ââ AI EDITOR DOM âââââââââââââââââââââââââââââââââââââââ -->
 <div id="aie-trigger" title=""></div>
 
 <div id="aie-panel">
@@ -439,7 +438,7 @@
       </svg>
       AI Editor
     </div>
-    <button id="aie-close">✕</button>
+    <button id="aie-close">â</button>
   </div>
   <div id="aie-body">
 
@@ -463,7 +462,7 @@
         </svg>
         Click &amp; Drag to Select Area
       </button>
-      <div id="aie-area-status">✓ Area selected</div>
+      <div id="aie-area-status">â Area selected</div>
     </div>
 
     <div>
@@ -474,7 +473,7 @@
 
     <div id="aie-status"></div>
 
-    <button id="aie-submit">✦ Apply Change with AI</button>
+    <button id="aie-submit">â¦ Apply Change with AI</button>
 
     <div id="aie-history-row">
       <button id="aie-hist-toggle">Show change history</button>
@@ -488,8 +487,8 @@
 <!-- Selection UI -->
 <div id="aie-overlay"></div>
 <div id="aie-selbox"></div>
-<div id="aie-selhint">Drag to select area — release to confirm</div>
-<!-- ── END AI EDITOR DOM ──────────────────────────────────── -->
+<div id="aie-selhint">Drag to select area â release to confirm</div>
+<!-- ââ END AI EDITOR DOM ââââââââââââââââââââââââââââââââââââ -->
 
 
 <script>
@@ -609,7 +608,7 @@ loadEvents();
   const STORAGE_PAT  = 'aie_pat';
   const STORAGE_REPO = 'aie_repo';
 
-  // ── Persistence ──────────────────────────────────────────
+  // ââ Persistence ââââââââââââââââââââââââââââââââââââââââââ
   const loadCtx  = () => { try { return JSON.parse(localStorage.getItem(STORAGE_CTX) || '[]'); } catch { return []; } };
   const saveCtx  = v  => localStorage.setItem(STORAGE_CTX, JSON.stringify(v.slice(-10)));
   const loadPat  = () => localStorage.getItem(STORAGE_PAT)  || '';
@@ -617,7 +616,7 @@ loadEvents();
   const loadRepo = () => localStorage.getItem(STORAGE_REPO) || REPO_DEFAULT;
   const saveRepo = v  => localStorage.setItem(STORAGE_REPO, v);
 
-  // ── DOM refs ─────────────────────────────────────────────
+  // ââ DOM refs âââââââââââââââââââââââââââââââââââââââââââââ
   const panel      = document.getElementById('aie-panel');
   const patInput   = document.getElementById('aie-pat');
   const repoInput  = document.getElementById('aie-repo');
@@ -633,17 +632,17 @@ loadEvents();
   const selbox     = document.getElementById('aie-selbox');
   const selhint    = document.getElementById('aie-selhint');
 
-  // ── State ────────────────────────────────────────────────
+  // ââ State ââââââââââââââââââââââââââââââââââââââââââââââââ
   let capturedArea  = null;
   let selStart      = null;
   let isDraggingPanel = false;
   let dragOffX = 0, dragOffY = 0;
 
-  // ── Init values ──────────────────────────────────────────
+  // ââ Init values ââââââââââââââââââââââââââââââââââââââââââ
   patInput.value  = loadPat();
   repoInput.value = loadRepo();
 
-  // ── Panel open/close ─────────────────────────────────────
+  // ââ Panel open/close âââââââââââââââââââââââââââââââââââââ
   document.getElementById('aie-trigger').addEventListener('click', openPanel);
   document.getElementById('aie-close').addEventListener('click', closePanel);
 
@@ -655,7 +654,7 @@ loadEvents();
     panel.classList.remove('aie-open');
   }
 
-  // ── Draggable panel ──────────────────────────────────────
+  // ââ Draggable panel ââââââââââââââââââââââââââââââââââââââ
   const header = document.getElementById('aie-header');
   header.addEventListener('mousedown', e => {
     isDraggingPanel = true;
@@ -674,11 +673,11 @@ loadEvents();
   });
   window.addEventListener('mouseup', () => isDraggingPanel = false);
 
-  // ── Save PAT / Repo on blur ───────────────────────────────
+  // ââ Save PAT / Repo on blur âââââââââââââââââââââââââââââââ
   patInput.addEventListener('blur',  () => savePat(patInput.value.trim()));
   repoInput.addEventListener('blur', () => saveRepo(repoInput.value.trim()));
 
-  // ── Area selection ───────────────────────────────────────
+  // ââ Area selection âââââââââââââââââââââââââââââââââââââââ
   selectBtn.addEventListener('click', startSelect);
 
   function startSelect() {
@@ -739,12 +738,12 @@ loadEvents();
     overlay.removeEventListener('touchmove',  onTMove);
     overlay.removeEventListener('touchend',   onTUp);
 
-    areaStatus.textContent = `✓ Area selected — ${Math.round(w)}×${Math.round(h)}px`;
+    areaStatus.textContent = `â Area selected â ${Math.round(w)}Ã${Math.round(h)}px`;
     areaStatus.classList.add('aie-visible');
   }
   function onTUp(e) { onUp(e); }
 
-  // ── Submit ───────────────────────────────────────────────
+  // ââ Submit âââââââââââââââââââââââââââââââââââââââââââââââ
   submitBtn.addEventListener('click', handleSubmit);
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter' && e.ctrlKey) handleSubmit(); });
 
@@ -753,33 +752,33 @@ loadEvents();
     const repo = repoInput.value.trim();
     const desc = descInput.value.trim();
 
-    if (!pat)  return setStatus('aie-error', '⚠ Enter your GitHub PAT token.');
-    if (!repo) return setStatus('aie-error', '⚠ Enter your repository (user/repo).');
-    if (!desc) return setStatus('aie-error', '⚠ Describe the change you want.');
+    if (!pat)  return setStatus('aie-error', 'â  Enter your GitHub PAT token.');
+    if (!repo) return setStatus('aie-error', 'â  Enter your repository (user/repo).');
+    if (!desc) return setStatus('aie-error', 'â  Describe the change you want.');
 
     savePat(pat); saveRepo(repo);
     submitBtn.disabled = true;
 
     try {
-      setStatus('aie-info', '📸 Capturing screenshot…');
+      setStatus('aie-info', 'ð¸ Capturing screenshotâ¦');
       await loadH2C();
       const b64 = await captureScreen();
 
-      setStatus('aie-info', '📥 Fetching current index.html from GitHub…');
+      setStatus('aie-info', 'ð¥ Fetching current index.html from GitHubâ¦');
       const { content, sha } = await ghFetch(pat, repo);
 
-      setStatus('aie-info', '🤖 Asking AI to edit the page…');
+      setStatus('aie-info', 'ð¤ Asking AI to edit the pageâ¦');
       const editedHtml = await callAI(pat, content, desc, b64);
 
       // Re-inject our editor block back in (AI only saw placeholders)
       const newHtml = reInjectEditor(content, editedHtml);
 
-      setStatus('aie-info', '⬆️ Committing changes…');
+      setStatus('aie-info', 'â¬ï¸ Committing changesâ¦');
       await ghCommit(pat, repo, newHtml, sha, desc);
 
       // Save context
       const ctx = loadCtx();
-      ctx.push({ desc, ts: new Date().toLocaleString(), area: capturedArea ? `${Math.round(capturedArea.w)}×${Math.round(capturedArea.h)}` : 'full' });
+      ctx.push({ desc, ts: new Date().toLocaleString(), area: capturedArea ? `${Math.round(capturedArea.w)}Ã${Math.round(capturedArea.h)}` : 'full' });
       saveCtx(ctx);
       renderHistory();
 
@@ -789,12 +788,12 @@ loadEvents();
       descInput.value = '';
       submitBtn.disabled = false;
 
-      setStatus('aie-info', '⏳ Waiting 60s for GitHub Pages to deploy…');
+      setStatus('aie-info', 'â³ Waiting 60s for GitHub Pages to deployâ¦');
       await new Promise(r => setTimeout(r, 60000));
-      setStatus('aie-success', '✅ Done! Reload the page to see your changes.');
+      setStatus('aie-success', 'â Done! Reload the page to see your changes.');
 
     } catch (err) {
-      setStatus('aie-error', '❌ ' + (err.message || 'Something went wrong.'));
+      setStatus('aie-error', 'â ' + (err.message || 'Something went wrong.'));
       submitBtn.disabled = false;
     }
   }
@@ -805,7 +804,7 @@ loadEvents();
     statusEl.style.display = 'block';
   }
 
-  // ── History ──────────────────────────────────────────────
+  // ââ History ââââââââââââââââââââââââââââââââââââââââââââââ
   histToggle.addEventListener('click', () => {
     histEl.classList.toggle('aie-open');
     histToggle.textContent = histEl.classList.contains('aie-open') ? 'Hide history' : 'Show change history';
@@ -825,7 +824,7 @@ loadEvents();
     ).join('');
   }
 
-  // ── html2canvas loader ───────────────────────────────────
+  // ââ html2canvas loader âââââââââââââââââââââââââââââââââââ
   function loadH2C() {
     return new Promise(resolve => {
       if (window.html2canvas) return resolve();
@@ -856,10 +855,10 @@ loadEvents();
     return canvas.toDataURL('image/jpeg', 0.4).split(',')[1];
   }
 
-  // ── Strip AI editor block from HTML before sending to AI ─
+  // ââ Strip AI editor block from HTML before sending to AI â
   function stripEditorBlock(html) {
     // Remove everything between the AI EDITOR DOM and END AI EDITOR DOM comments
-    html = html.replace(/<!--\s*──\s*AI EDITOR DOM[\s\S]*?──\s*END AI EDITOR DOM\s*-->/gi, '<!-- AI_EDITOR_PLACEHOLDER -->');
+    html = html.replace(/<!--\s*ââ\s*AI EDITOR DOM[\s\S]*?ââ\s*END AI EDITOR DOM\s*-->/gi, '<!-- AI_EDITOR_PLACEHOLDER -->');
     // Remove AI EDITOR STYLES block (between the two style comment markers)
     html = html.replace(/\/\*\s*={10,}\s*\n\s*AI EDITOR STYLES[\s\S]*?={10,}\s*\*\//gi, '/* AI_EDITOR_STYLES_PLACEHOLDER */');
     // Remove AI EDITOR SCRIPT block
@@ -867,10 +866,10 @@ loadEvents();
     return html;
   }
 
-  // ── Re-inject editor into AI-returned HTML ───────────────
+  // ââ Re-inject editor into AI-returned HTML âââââââââââââââ
   function reInjectEditor(originalHtml, aiHtml) {
     // Extract the three editor blocks from the original file
-    const domMatch   = originalHtml.match(/(<!--\s*──\s*AI EDITOR DOM[\s\S]*?──\s*END AI EDITOR DOM\s*-->)/i);
+    const domMatch   = originalHtml.match(/(<!--\s*ââ\s*AI EDITOR DOM[\s\S]*?ââ\s*END AI EDITOR DOM\s*-->)/i);
     const styleMatch = originalHtml.match(/(\/\*\s*={10,}\s*\n\s*AI EDITOR STYLES[\s\S]*?={10,}\s*\*\/)/i);
     const scriptMatch= originalHtml.match(/(\/\*\s*={10,}\s*\n\s*AI EDITOR SCRIPT[\s\S]*?\}\)\(\);)/i);
 
@@ -881,13 +880,13 @@ loadEvents();
 
     // Fallback: if placeholders weren't preserved by AI, append editor before </body>
     if (!domMatch && originalHtml.includes('id="aie-panel"')) {
-      const editorDom = originalHtml.match(/<!-- ── AI EDITOR DOM[\s\S]*?── END AI EDITOR DOM ──/i)?.[0] || '';
+      const editorDom = originalHtml.match(/<!-- ââ AI EDITOR DOM[\s\S]*?ââ END AI EDITOR DOM ââ/i)?.[0] || '';
       if (editorDom) out = out.replace('</body>', editorDom + '\n</body>');
     }
     return out;
   }
 
-  // ── GitHub API ───────────────────────────────────────────
+  // ââ GitHub API âââââââââââââââââââââââââââââââââââââââââââ
   async function ghFetch(pat, repo) {
     const res = await fetch(`https://api.github.com/repos/${repo}/contents/${FILE_PATH}`, {
       headers: { Authorization: `token ${pat}`, Accept: 'application/vnd.github.v3+json' }
@@ -906,13 +905,13 @@ loadEvents();
     });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
-      throw new Error(`GitHub commit: ${res.status} — ${e.message || res.statusText}`);
+      throw new Error(`GitHub commit: ${res.status} â ${e.message || res.statusText}`);
     }
   }
 
-  // ── AI call (GitHub Models) ──────────────────────────────
+  // ââ AI call (GitHub Models) ââââââââââââââââââââââââââââââ
   async function callAI(pat, currentHtml, description, b64) {
-    // Strip our own editor code — AI only needs to see the real site content
+    // Strip our own editor code â AI only needs to see the real site content
     const strippedHtml = stripEditorBlock(currentHtml);
 
     const prevChanges = loadCtx();
@@ -922,11 +921,11 @@ loadEvents();
       : 'No previous changes.';
 
     const system = `You are an expert web developer. You receive the full HTML source of a page and a change request.
-Return ONLY the complete updated HTML file — no markdown fences, no explanation, no preamble.
+Return ONLY the complete updated HTML file â no markdown fences, no explanation, no preamble.
 The file must start with <!DOCTYPE html> or <html.
 Preserve all existing functionality unless explicitly asked to change it.
 The blue-highlighted region in the screenshot shows the area to focus on.
-The HTML will contain placeholder comments like <!-- AI_EDITOR_PLACEHOLDER --> — leave these exactly as-is, do not remove or change them.
+The HTML will contain placeholder comments like <!-- AI_EDITOR_PLACEHOLDER --> â leave these exactly as-is, do not remove or change them.
 
 Context of prior edits (do NOT undo these):
 ${ctxNote}`;
@@ -949,14 +948,14 @@ ${ctxNote}`;
 
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
-      throw new Error(`AI API: ${res.status} — ${e.error?.message || res.statusText}`);
+      throw new Error(`AI API: ${res.status} â ${e.error?.message || res.statusText}`);
     }
 
     const data = await res.json();
     let html = (data.choices?.[0]?.message?.content || '').trim();
     html = html.replace(/^```html?\s*/i, '').replace(/```\s*$/i, '').trim();
     if (!html.toLowerCase().startsWith('<!doctype') && !html.toLowerCase().startsWith('<html'))
-      throw new Error('AI returned invalid content — not a valid HTML document.');
+      throw new Error('AI returned invalid content â not a valid HTML document.');
     return html;
   }
 
