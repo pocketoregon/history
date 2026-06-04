@@ -434,15 +434,17 @@
   descInput.addEventListener('keydown', e => { if (e.key === 'Enter' && e.ctrlKey) handleSubmit(); });
 
   async function handleSubmit() {
-    const pat  = patInput.value.trim();
-    const repo = repoInput.value.trim();
-    const desc = descInput.value.trim();
+    const pat   = patInput.value.trim();
+    const repo  = repoInput.value.trim();
+    const orkey = orkeyInput.value.trim();
+    const desc  = descInput.value.trim();
 
-    if (!pat)  return setStatus('aie-error', '! Enter your GitHub PAT token.');
-    if (!repo) return setStatus('aie-error', '! Enter your repository (user/repo).');
-    if (!desc) return setStatus('aie-error', '! Describe the change you want.');
+    if (!pat)   return setStatus('aie-error', '! Enter your GitHub PAT token.');
+    if (!repo)  return setStatus('aie-error', '! Enter your repository (user/repo).');
+    if (!orkey) return setStatus('aie-error', '! Enter your OpenRouter API key.');
+    if (!desc)  return setStatus('aie-error', '! Describe the change you want.');
 
-    savePat(pat); saveRepo(repo);
+    savePat(pat); saveRepo(repo); saveOR(orkey);
     submitBtn.disabled = true;
 
     try {
@@ -454,10 +456,7 @@
       const { content, sha } = await ghFetch(pat, repo);
 
       setStatus('aie-info', '[3/5] Asking AI to edit the page-');
-      const editedHtml = await callAI(orkey, content, desc, b64);
-
-      // Re-inject our editor block back in (AI only saw placeholders)
-      const newHtml = reInjectEditor(content, editedHtml);
+      const newHtml = await callAI(orkey, content, desc, b64);
 
       setStatus('aie-info', '[4/5] Committing changes-');
       await ghCommit(pat, repo, newHtml, sha, desc);
@@ -597,8 +596,8 @@
 
   // -- AI call (GitHub Models) ------------------------------
   async function callAI(orkey, currentHtml, description, b64) {
-    // Strip our own editor code - AI only needs to see the real site content
-    const strippedHtml = stripEditorBlock(currentHtml);
+    // index.html is clean - editor lives in ai-editor.js separately
+    const strippedHtml = currentHtml;
 
     const prevChanges = loadCtx();
     const ctxNote = prevChanges.length
