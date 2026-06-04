@@ -38,11 +38,30 @@
     font-weight: 700;
     color: #fff;
     letter-spacing: -0.5px;
+    position: relative;
   }
   header p {
     font-style: italic;
     color: #888;
     margin-top: 0.25rem;
+  }
+
+  .comet {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: blue;
+    border-radius: 50%;
+    box-shadow: 0 0 10px blue;
+    animation: comet-tail 1s infinite;
+  }
+
+  @keyframes comet-tail {
+    0% { transform: translateY(-50%) translateX(0); }
+    100% { transform: translateY(-50%) translateX(20px); }
   }
 
   /* --- TIMELINE WORKSPACE --- */
@@ -225,6 +244,7 @@
 
 <header>
   <div class="console-meta">Scientific Record - Visualizer Console</div>
+  <div class="comet"></div>
   <h1>The Living Timeline</h1>
   <p></p>
 </header>
