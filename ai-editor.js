@@ -223,9 +223,9 @@
     </div>
 
     <div>
-      <span class="aie-label">OpenRouter API Key <span style="color:#3fb950;font-weight:400;text-transform:none;letter-spacing:0">(free at openrouter.ai)</span></span>
+      <span class="aie-label">GitHub Models Token</span>
       <input class="aie-input" id="aie-orkey" type="password"
-             placeholder="sk-or-v1-xxxxxxxxxxxx" autocomplete="off" spellcheck="false" />
+             placeholder="ghp_xxxx (same as PAT or separate Models token)" autocomplete="off" spellcheck="false" />
     </div>
 
     <div>
@@ -281,8 +281,8 @@
 
   const REPO_DEFAULT    = 'pocketoregon/history';
   const FILE_PATH       = 'index.html';
-  const OPENROUTER_URL  = 'https://openrouter.ai/api/v1/chat/completions';
-  const OPENROUTER_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+  const AI_URL  = 'https://corsproxy.io/?url=https://models.inference.ai.azure.com/chat/completions';
+  const AI_MODEL = 'gpt-4o-mini';
 
   const STORAGE_CTX  = 'aie_ctx';
   const STORAGE_PAT  = 'aie_pat';
@@ -441,7 +441,7 @@
 
     if (!pat)   return setStatus('aie-error', '! Enter your GitHub PAT token.');
     if (!repo)  return setStatus('aie-error', '! Enter your repository (user/repo).');
-    if (!orkey) return setStatus('aie-error', '! Enter your OpenRouter API key.');
+    if (!orkey) return setStatus('aie-error', '! Enter your GitHub Models token.');
     if (!desc)  return setStatus('aie-error', '! Describe the change you want.');
 
     savePat(pat); saveRepo(repo); saveOR(orkey);
@@ -620,16 +620,14 @@ ${ctxNote}`;
       { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${b64}` } }
     ];
 
-    const res = await fetch(OPENROUTER_URL, {
+    const res = await fetch(AI_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${orkey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://pocketoregon.github.io/history',
-        'X-Title': 'AI Editor'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: OPENROUTER_MODEL,
+        model: AI_MODEL,
         messages: [{ role: 'system', content: system }, { role: 'user', content: userContent }],
         max_tokens: 8000,
         temperature: 0.15
