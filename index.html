@@ -769,7 +769,10 @@ loadEvents();
       const { content, sha } = await ghFetch(pat, repo);
 
       setStatus('aie-info', '🤖 Asking AI to edit the page…');
-      const newHtml = await callAI(pat, content, desc, b64);
+      const editedHtml = await callAI(pat, content, desc, b64);
+
+      // Re-inject our editor block back in (AI only saw placeholders)
+      const newHtml = reInjectEditor(content, editedHtml);
 
       setStatus('aie-info', '⬆️ Committing changes…');
       await ghCommit(pat, repo, newHtml, sha, desc);
@@ -850,7 +853,38 @@ loadEvents();
       ctx.fillRect(rx, ry, rw, rh);
       ctx.strokeRect(rx, ry, rw, rh);
     }
-    return canvas.toDataURL('image/jpeg', 0.65).split(',')[1];
+    return canvas.toDataURL('image/jpeg', 0.4).split(',')[1];
+  }
+
+  // ── Strip AI editor block from HTML before sending to AI ─
+  function stripEditorBlock(html) {
+    // Remove everything between the AI EDITOR DOM and END AI EDITOR DOM comments
+    html = html.replace(/<!--\s*──\s*AI EDITOR DOM[\s\S]*?──\s*END AI EDITOR DOM\s*-->/gi, '<!-- AI_EDITOR_PLACEHOLDER -->');
+    // Remove AI EDITOR STYLES block (between the two style comment markers)
+    html = html.replace(/\/\*\s*={10,}\s*\n\s*AI EDITOR STYLES[\s\S]*?={10,}\s*\*\//gi, '/* AI_EDITOR_STYLES_PLACEHOLDER */');
+    // Remove AI EDITOR SCRIPT block
+    html = html.replace(/\/\*\s*={10,}\s*\n\s*AI EDITOR SCRIPT[\s\S]*?\}\)\(\);/gi, '/* AI_EDITOR_SCRIPT_PLACEHOLDER */');
+    return html;
+  }
+
+  // ── Re-inject editor into AI-returned HTML ───────────────
+  function reInjectEditor(originalHtml, aiHtml) {
+    // Extract the three editor blocks from the original file
+    const domMatch   = originalHtml.match(/(<!--\s*──\s*AI EDITOR DOM[\s\S]*?──\s*END AI EDITOR DOM\s*-->)/i);
+    const styleMatch = originalHtml.match(/(\/\*\s*={10,}\s*\n\s*AI EDITOR STYLES[\s\S]*?={10,}\s*\*\/)/i);
+    const scriptMatch= originalHtml.match(/(\/\*\s*={10,}\s*\n\s*AI EDITOR SCRIPT[\s\S]*?\}\)\(\);)/i);
+
+    let out = aiHtml;
+    if (domMatch)    out = out.replace('<!-- AI_EDITOR_PLACEHOLDER -->', domMatch[1]);
+    if (styleMatch)  out = out.replace('/* AI_EDITOR_STYLES_PLACEHOLDER */', styleMatch[1]);
+    if (scriptMatch) out = out.replace('/* AI_EDITOR_SCRIPT_PLACEHOLDER */', scriptMatch[1]);
+
+    // Fallback: if placeholders weren't preserved by AI, append editor before </body>
+    if (!domMatch && originalHtml.includes('id="aie-panel"')) {
+      const editorDom = originalHtml.match(/<!-- ── AI EDITOR DOM[\s\S]*?── END AI EDITOR DOM ──/i)?.[0] || '';
+      if (editorDom) out = out.replace('</body>', editorDom + '\n</body>');
+    }
+    return out;
   }
 
   // ── GitHub API ───────────────────────────────────────────
@@ -878,6 +912,9 @@ loadEvents();
 
   // ── AI call (GitHub Models) ──────────────────────────────
   async function callAI(pat, currentHtml, description, b64) {
+    // Strip our own editor code — AI only needs to see the real site content
+    const strippedHtml = stripEditorBlock(currentHtml);
+
     const prevChanges = loadCtx();
     const ctxNote = prevChanges.length
       ? 'Previous changes already applied to this file:\n' +
@@ -889,12 +926,13 @@ Return ONLY the complete updated HTML file — no markdown fences, no explanatio
 The file must start with <!DOCTYPE html> or <html.
 Preserve all existing functionality unless explicitly asked to change it.
 The blue-highlighted region in the screenshot shows the area to focus on.
+The HTML will contain placeholder comments like <!-- AI_EDITOR_PLACEHOLDER --> — leave these exactly as-is, do not remove or change them.
 
 Context of prior edits (do NOT undo these):
 ${ctxNote}`;
 
     const userContent = [
-      { type: 'text', text: `Current HTML:\n\`\`\`html\n${currentHtml}\n\`\`\`\n\nRequested change: ${description}\n\nReturn the complete updated HTML only.` },
+      { type: 'text', text: `Current HTML:\n\`\`\`html\n${strippedHtml}\n\`\`\`\n\nRequested change: ${description}\n\nReturn the complete updated HTML only.` },
       { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${b64}` } }
     ];
 
@@ -902,7 +940,7 @@ ${ctxNote}`;
       method: 'POST',
       headers: { Authorization: `Bearer ${pat}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: GH_MODELS_MODEL,
+        model: 'gpt-4o',
         messages: [{ role: 'system', content: system }, { role: 'user', content: userContent }],
         max_tokens: 8000,
         temperature: 0.15
